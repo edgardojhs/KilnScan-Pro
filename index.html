@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KilnScan Pro — Panel Maestro</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+<script src="kilnscan.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Barlow+Condensed:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#080a0d;--s1:#0e1117;--s2:#141820;--s3:#1b2030;--s4:#222940;
+  --b1:#1e2535;--b2:#2a3550;--b3:#364260;
+  --fire:#ff6b2b;--fire2:#ff8c4a;--fire3:rgba(255,107,43,.12);
+  --cyan:#00d4ff;--cyan2:rgba(0,212,255,.09);--cyan3:rgba(0,212,255,.22);
+  --green:#39e07a;--green2:rgba(57,224,122,.09);
+  --yellow:#f5c518;--yellow2:rgba(245,197,24,.09);
+  --red:#ff4d4d;--red2:rgba(255,77,77,.09);
+  --blue:#60a5fa;--blue2:rgba(96,165,250,.09);
+  --t1:#e2e8f5;--t2:#6b7fa0;--t3:#2e3d58;--t4:#1a2236;
+  --mono:'DM Mono',monospace;--sans:'Syne',sans-serif;--cond:'Barlow Condensed',sans-serif;
+  --r:8px;--r2:14px;--r3:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100vh;}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;background-image:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(255,107,43,.06),transparent);}
+.lbox{width:380px;padding:36px;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);}
+.llogo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.llogo-i{width:40px;height:40px;background:var(--fire);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.llogo-t{font-size:17px;font-weight:800;letter-spacing:-.4px;}
+.llogo-s{font-size:10px;color:var(--t3);margin-top:1px;}
+.ltitle{font-size:15px;font-weight:700;margin-bottom:3px;}
+.lsub{font-size:12px;color:var(--t2);margin-bottom:22px;}
+.fg{margin-bottom:13px;}
+.fl{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;display:block;}
+.fi{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:9px 13px;font-size:13px;font-family:var(--sans);color:var(--t1);transition:border-color .15s;}
+.fi:focus{outline:none;border-color:var(--fire);}
+.fi::placeholder{color:var(--t3);}
+.btnlogin{width:100%;padding:11px;background:var(--fire);border:none;border-radius:var(--r);color:#fff;font-size:13px;font-weight:700;font-family:var(--sans);cursor:pointer;letter-spacing:.3px;transition:all .15s;margin-top:6px;}
+.btnlogin:hover{background:var(--fire2);}
+.lerr{font-size:11px;color:var(--red);margin-top:8px;min-height:16px;}
+
+/* APP */
+#app{display:none;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 22px;height:54px;border-bottom:1px solid var(--b1);background:var(--s1);position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-i{width:30px;height:30px;background:var(--fire);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.logo-t{font-family:var(--cond);font-size:16px;font-weight:700;letter-spacing:.4px;}
+.logo-b{font-size:10px;font-weight:700;background:var(--fire3);color:var(--fire);border:1px solid rgba(255,107,43,.25);padding:2px 8px;border-radius:20px;letter-spacing:.4px;}
+.tbr{display:flex;align-items:center;gap:10px;}
+.sync-p{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);background:var(--green2);border:1px solid rgba(57,224,122,.18);padding:3px 10px;border-radius:20px;}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.bsm{padding:6px 13px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all .15s;border:1px solid var(--b2);background:var(--s2);color:var(--t1);}
+.bsm:hover{background:var(--s3);}
+.bfire{background:var(--fire);border-color:var(--fire);color:#fff;}
+.bfire:hover{background:var(--fire2);}
+.bdanger{background:var(--red2);border-color:rgba(255,77,77,.25);color:var(--red);}
+.bdanger:hover{background:rgba(255,77,77,.18);}
+
+/* SHELL */
+.shell{display:flex;height:calc(100vh - 54px);}
+.sidebar{width:210px;min-width:210px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;}
+.ns{padding:18px 12px 6px;font-size:10px;font-weight:700;color:var(--t4);letter-spacing:1px;text-transform:uppercase;}
+.nv{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:var(--r);margin:0 4px 2px;cursor:pointer;font-size:13px;font-weight:600;color:var(--t2);transition:all .15s;}
+.nv:hover{background:var(--s3);color:var(--t1);}
+.nv.active{background:var(--fire3);color:var(--fire);border:1px solid rgba(255,107,43,.18);}
+.ni{font-size:13px;width:18px;text-align:center;}
+.sb-bot{margin-top:auto;padding:10px;border-top:1px solid var(--b1);}
+.upill{display:flex;align-items:center;gap:8px;padding:9px;background:var(--s2);border-radius:var(--r);border:1px solid var(--b1);}
+.uav{width:26px;height:26px;background:var(--fire3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--fire);font-weight:700;}
+.un{font-size:11px;font-weight:700;}
+.ur{font-size:9px;color:var(--t3);}
+.bicon{width:28px;height:28px;border-radius:6px;border:1px solid var(--b1);background:none;color:var(--t2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.bicon:hover{background:var(--s2);color:var(--t1);}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;background:var(--bg);}
+.pg{display:none;padding:26px;}
+.pg.active{display:block;}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
+.ptitle{font-size:21px;font-weight:800;letter-spacing:-.5px;}
+.psub{font-size:12px;color:var(--t2);margin-top:3px;}
+
+/* KPI GRID */
+.kg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px;}
+.kc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:16px;position:relative;overflow:hidden;}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kc.kfire::before{background:var(--fire);}
+.kc.kcyan::before{background:var(--cyan);}
+.kc.kgreen::before{background:var(--green);}
+.kc.kyellow::before{background:var(--yellow);}
+.kc.kred::before{background:var(--red);}
+.klbl{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:8px;}
+.kval{font-size:26px;font-weight:800;letter-spacing:-1.2px;font-family:var(--mono);}
+.kval.kfire{color:var(--fire);}.kval.kcyan{color:var(--cyan);}.kval.kgreen{color:var(--green);}.kval.kyellow{color:var(--yellow);}.kval.kred{color:var(--red);}
+.ksub{font-size:10px;color:var(--t3);margin-top:5px;}
+
+/* CLIENTS TABLE */
+.twrap{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);overflow:hidden;}
+.thead{display:grid;grid-template-columns:1fr 100px 120px 115px 115px 140px;padding:9px 18px;background:var(--s2);font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.7px;text-transform:uppercase;border-bottom:1px solid var(--b1);}
+.trow{display:grid;grid-template-columns:1fr 100px 120px 115px 115px 140px;padding:13px 18px;align-items:center;border-bottom:1px solid var(--b1);transition:background .1s;cursor:pointer;}
+.trow:last-child{border-bottom:none;}
+.trow:hover{background:var(--s2);}
+.cn{font-size:13px;font-weight:700;}.cs{font-size:11px;color:var(--t2);margin-top:1px;}
+.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.2px;}
+.pgreen{background:var(--green2);color:var(--green);border:1px solid rgba(57,224,122,.18);}
+.pred{background:var(--red2);color:var(--red);border:1px solid rgba(255,77,77,.18);}
+.pyellow{background:var(--yellow2);color:var(--yellow);border:1px solid rgba(245,197,24,.18);}
+.pgray{background:var(--s3);color:var(--t2);border:1px solid var(--b1);}
+.ra{display:flex;gap:5px;align-items:center;}
+
+/* DETAIL PANEL */
+.dp{position:fixed;right:0;top:54px;bottom:0;width:540px;background:var(--s1);border-left:1px solid var(--b1);overflow-y:auto;z-index:50;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.dp.open{transform:translateX(0);}
+.dptop{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:var(--s1);z-index:2;}
+.dpbody{padding:22px;}
+.seclbl{font-size:10px;font-weight:700;color:var(--t4);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--b1);}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px;}
+.iitem{background:var(--s2);border-radius:var(--r);padding:11px;}
+.ilbl{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;}
+.ival{font-size:13px;font-weight:700;font-family:var(--mono);}
+.pc{padding:11px 13px;border-radius:var(--r);margin-bottom:7px;cursor:pointer;border:1px solid var(--b1);background:var(--s2);transition:all .15s;}
+.pc:hover{border-color:var(--b2);background:var(--s3);}
+.pctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.pcn{font-size:12px;font-weight:700;font-family:var(--cond);}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s;}
+.mo.open{opacity:1;pointer-events:all;}
+.mbox{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:26px;width:500px;max-width:95vw;transform:translateY(16px);transition:transform .18s;}
+.mo.open .mbox{transform:translateY(0);}
+.mtitle{font-size:16px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px;}
+.msub{font-size:12px;color:var(--t2);margin-bottom:22px;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.ffu{grid-column:1/-1;}
+.fsel{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:9px 13px;font-size:13px;font-family:var(--sans);color:var(--t1);-webkit-appearance:none;}
+.fsel:focus{outline:none;border-color:var(--fire);}
+.mfooter{display:flex;justify-content:flex-end;gap:9px;margin-top:18px;}
+.gcreds{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:14px;margin-top:14px;display:none;}
+.crow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--b1);}
+.crow:last-child{border-bottom:none;}
+.clbl{font-size:11px;color:var(--t2);}
+.cval{font-family:var(--mono);font-size:12px;color:var(--cyan);user-select:all;}
+
+/* EMPTY */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;gap:12px;color:var(--t3);}
+.ei{font-size:32px;opacity:.3;}
+.et{font-size:13px;font-weight:600;color:var(--t2);}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:11px 16px;font-size:12px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.4);transform:translateY(70px);opacity:0;transition:all .28s;z-index:500;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-left:3px solid var(--green);}
+.toast.err{border-left:3px solid var(--red);}
+.toast.info{border-left:3px solid var(--cyan);}
+
+.hm-leg{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--t3);margin-top:7px;}
+.hm-bar{flex:1;height:5px;border-radius:3px;background:linear-gradient(to right,#39e07a,#f5c518,#ff4d4d);}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px;}
+@media(max-width:1100px){.kg{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:900px){.kg{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lbox">
+    <div class="llogo">
+      <div class="llogo-i">🔥</div>
+      <div><div class="llogo-t" id="empresa-nombre">KilnScan Pro</div><div class="llogo-s">Panel de Administración</div></div>
+    </div>
+    <div class="ltitle">Acceso Maestro</div>
+    <div class="lsub">Solo personal autorizado de tu empresa</div>
+    <div class="fg"><label class="fl">Correo</label><input class="fi" type="email" id="le" placeholder="maestro@empresa.com"></div>
+    <div class="fg"><label class="fl">Contraseña</label><input class="fi" type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btnlogin" onclick="doLogin()">Ingresar al panel</button>
+    <div class="lerr" id="lerr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-i">🔥</div>
+      <span class="logo-t" id="top-empresa">KilnScan Pro</span>
+      <span class="logo-b">MAESTRO</span>
+    </div>
+    <div class="tbr">
+      <div class="sync-p"><div class="sdot"></div><span id="synctxt">En línea</span></div>
+      <button class="bsm bfire" onclick="openMC()">+ Nuevo cliente</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="sidebar">
+      <div class="ns">Navegación</div>
+      <div class="nv active" onclick="showPg('dash')" id="nv-dash"><span class="ni">📊</span>Dashboard</div>
+      <div class="nv" onclick="showPg('clients')" id="nv-clients"><span class="ni">🏭</span>Clientes</div>
+      <div class="nv" onclick="showPg('licenses')" id="nv-licenses"><span class="ni">🔑</span>Licencias</div>
+      <div class="sb-bot">
+        <div class="upill">
+          <div class="uav">M</div>
+          <div style="flex:1"><div class="un">Maestro</div><div class="ur">Administrador</div></div>
+          <button class="bicon" onclick="doLogout()" title="Salir">⏻</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- DASHBOARD -->
+      <div class="pg active" id="pg-dash">
+        <div class="ph">
+          <div><div class="ptitle">Dashboard global</div><div class="psub">Vista en tiempo real — todos los proyectos activos</div></div>
+        </div>
+        <div class="kg">
+          <div class="kc kfire"><div class="klbl">Clientes activos</div><div class="kval kfire" id="kc1">—</div><div class="ksub">Licencias vigentes</div></div>
+          <div class="kc kcyan"><div class="klbl">Hornos totales</div><div class="kval kcyan" id="kc2">—</div><div class="ksub">Proyectos registrados</div></div>
+          <div class="kc kgreen"><div class="klbl">Estado normal</div><div class="kval kgreen" id="kc3">—</div><div class="ksub">Dentro de tolerancia</div></div>
+          <div class="kc kyellow"><div class="klbl">En atención</div><div class="kval kyellow" id="kc4">—</div><div class="ksub">Supera tolerancia</div></div>
+          <div class="kc kred"><div class="klbl">Críticos</div><div class="kval kred" id="kc5">—</div><div class="ksub">Requieren intervención</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;" id="dash-grid"></div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div class="pg" id="pg-clients">
+        <div class="ph">
+          <div><div class="ptitle">Gestión de clientes</div><div class="psub">Fábricas, accesos y licencias</div></div>
+          <button class="bsm bfire" onclick="openMC()">+ Nuevo cliente</button>
+        </div>
+        <div class="twrap" id="ctable"></div>
+      </div>
+
+      <!-- LICENSES -->
+      <div class="pg" id="pg-licenses">
+        <div class="ph"><div><div class="ptitle">Control de licencias</div><div class="psub">Vencimientos y estado de acceso</div></div></div>
+        <div class="twrap" id="ltable"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="dp" id="detail-panel">
+  <div class="dptop">
+    <div><div style="font-size:14px;font-weight:800;" id="dp-title">—</div><div style="font-size:11px;color:var(--t2);margin-top:2px;" id="dp-sub">—</div></div>
+    <button class="bicon" onclick="closeDp()">✕</button>
+  </div>
+  <div class="dpbody" id="dp-body"></div>
+</div>
+
+<!-- MODAL CLIENTE -->
+<div class="mo" id="mo-client">
+  <div class="mbox">
+    <div class="mtitle">Nuevo cliente / Fábrica</div>
+    <div class="msub">Las credenciales se generan automáticamente al crear</div>
+    <div class="fgrid">
+      <div class="ffu fg"><label class="fl">Nombre de la fábrica</label><input class="fi" id="cf-name" placeholder="Ej: Cementos Argos — Planta Norte"></div>
+      <div class="fg"><label class="fl">Correo de acceso</label><input class="fi" id="cf-email" type="email" placeholder="planta@fabrica.com"></div>
+      <div class="fg"><label class="fl">Contraseña</label><input class="fi" id="cf-pass" type="text" placeholder="Mínimo 8 caracteres"></div>
+      <div class="fg"><label class="fl">Plan de licencia</label>
+        <select class="fsel" id="cf-plan">
+          <option value="monthly">Mensual</option>
+          <option value="quarterly" selected>Trimestral</option>
+          <option value="biannual">Semestral</option>
+          <option value="annual">Anual</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Fecha de inicio</label><input class="fi" id="cf-start" type="date"></div>
+      <div class="fg"><label class="fl">Hornos a registrar</label><input class="fi" id="cf-hornos" type="number" placeholder="Ej: 2" min="1" max="20"></div>
+      <div class="fg"><label class="fl">Código de proyecto (auto)</label><input class="fi" id="cf-code" readonly style="font-family:var(--mono);letter-spacing:1.5px;color:var(--cyan);cursor:default"></div>
+    </div>
+    <div class="gcreds" id="gcreds">
+      <div class="seclbl" style="margin-bottom:10px">✓ Cliente creado — Guarda estas credenciales</div>
+      <div class="crow"><span class="clbl">Email de acceso</span><span class="cval" id="gc-email">—</span></div>
+      <div class="crow"><span class="clbl">Contraseña</span><span class="cval" id="gc-pass">—</span></div>
+      <div class="crow"><span class="clbl">Código de proyecto</span><span class="cval" id="gc-code">—</span></div>
+      <div class="crow"><span class="clbl">URL de acceso fábrica</span><span class="cval" id="gc-url" style="font-size:10px;word-break:break-all">—</span></div>
+      <button class="bsm" style="margin-top:10px;width:100%" onclick="copyAllCreds()">📋 Copiar todo</button>
+    </div>
+    <div class="mfooter">
+      <button class="bsm" onclick="closeMC()">Cancelar</button>
+      <button class="bsm bfire" id="btn-create" onclick="createClient()">Crear cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RENOVAR -->
+<div class="mo" id="mo-renew">
+  <div class="mbox" style="width:380px">
+    <div class="mtitle">Renovar licencia</div>
+    <div class="msub" id="renew-name">—</div>
+    <div class="fgrid">
+      <div class="fg"><label class="fl">Nuevo plan</label>
+        <select class="fsel" id="rp"><option value="monthly">Mensual (+1 mes)</option><option value="quarterly">Trimestral (+3 meses)</option><option value="biannual">Semestral (+6 meses)</option><option value="annual">Anual (+12 meses)</option></select>
+      </div>
+      <div class="fg"><label class="fl">Desde</label><input class="fi" id="rf" type="date"></div>
+    </div>
+    <div class="mfooter">
+      <button class="bsm" onclick="document.getElementById('mo-renew').classList.remove('open')">Cancelar</button>
+      <button class="bsm bfire" onclick="confirmRenew()">Confirmar renovación</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Cargar config ──
+const CFG = window.KS_CONFIG || {};
+const FB_CFG = CFG.firebase || {};
+const MAESTRO_EMAIL = CFG.maestroEmail || 'maestro@kilnscan.com';
+const DEMO = !FB_CFG.apiKey || FB_CFG.apiKey.startsWith('PEGA_AQUI');
+
+let db=null, auth=null;
+let clients={}, projects={};
+let renewId=null;
+
+// ── DEMO DATA ──
+const DD_CLIENTS = {
+  "c1":{id:"c1",name:"Cementos Argos — Planta Norte",email:"argos@planta.com",plan:"quarterly",status:"active",startDate:"2025-01-15",expiresAt:"2026-06-15",projectCode:"ARG-N1-7X3K",hornos:2},
+  "c2":{id:"c2",name:"Holcim Colombia — Nobsa",email:"holcim@nobsa.com",plan:"annual",status:"active",startDate:"2025-01-01",expiresAt:"2026-12-31",projectCode:"HLC-N1-2M5P",hornos:1},
+  "c3":{id:"c3",name:"Cemex Latam — Boyacá",email:"cemex@boyaca.com",plan:"monthly",status:"suspended",startDate:"2024-12-01",expiresAt:"2025-01-01",projectCode:"CMX-B1-9R4Q",hornos:3},
+};
+
+function makeDemoSections(dnom, ovalities) {
+  const sd = {};
+  ovalities.forEach((ov,i)=>{
+    const sec = KS.generateDemoSection(dnom, ov);
+    sec.name = `S${i+1}`;
+    sd[i] = sec;
+  });
+  return sd;
+}
+
+const DD_PROJECTS = {
+  "p1":{id:"p1",clientId:"c1",name:"Horno 1",code:"HRN-01",diam:4200,sections:6,length:75,tolerance:0.5,inclination:3.5,
+    sections_data: makeDemoSections(4200,[0.18,0.12,0.64,0.38,1.02,0.21])},
+  "p2":{id:"p2",clientId:"c1",name:"Horno 2",code:"HRN-02",diam:4000,sections:5,length:68,tolerance:0.5,inclination:3.5,
+    sections_data: makeDemoSections(4000,[0.10,0.09,1.24,0.08,0.11])},
+  "p3":{id:"p3",clientId:"c2",name:"Horno Principal",code:"HRN-03",diam:3800,sections:5,length:60,tolerance:0.5,inclination:4.0,
+    sections_data: makeDemoSections(3800,[0.08,0.11,0.09,0.07,0.10])},
+};
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded',()=>{
+  const cfg = window.KS_CONFIG||{};
+  if(cfg.empresaCorto){
+    document.getElementById('empresa-nombre').textContent=cfg.empresaCorto;
+    document.getElementById('top-empresa').textContent=cfg.empresaCorto;
+  }
+  document.getElementById('cf-start').value = new Date().toISOString().slice(0,10);
+  document.getElementById('rf').value = new Date().toISOString().slice(0,10);
+  genCode();
+  if(DEMO){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('synctxt').textContent='Modo demo';
+    clients=JSON.parse(JSON.stringify(DD_CLIENTS));
+    projects=JSON.parse(JSON.stringify(DD_PROJECTS));
+    renderAll();
+  } else {
+    try{
+      firebase.initializeApp(FB_CFG);
+      auth=firebase.auth();
+      db=firebase.firestore();
+      auth.onAuthStateChanged(u=>{
+        if(u&&u.email===MAESTRO_EMAIL){
+          document.getElementById('login-screen').style.display='none';
+          document.getElementById('app').style.display='block';
+          subscribeData();
+        }
+      });
+    }catch(e){console.warn(e);}
+  }
+});
+
+async function doLogin(){
+  const e=document.getElementById('le').value.trim();
+  const p=document.getElementById('lp').value;
+  document.getElementById('lerr').textContent='';
+  if(DEMO){document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';clients=JSON.parse(JSON.stringify(DD_CLIENTS));projects=JSON.parse(JSON.stringify(DD_PROJECTS));renderAll();return;}
+  try{
+    await auth.signInWithEmailAndPassword(e,p);
+    if(auth.currentUser?.email!==MAESTRO_EMAIL){auth.signOut();document.getElementById('lerr').textContent='No es cuenta maestra';}
+  }catch(err){document.getElementById('lerr').textContent='Credenciales incorrectas';}
+}
+function doLogout(){if(!DEMO)auth?.signOut();document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';}
+
+function subscribeData(){
+  db.collection('clients').onSnapshot(s=>{s.forEach(d=>{clients[d.id]={id:d.id,...d.data()};});renderAll();document.getElementById('synctxt').textContent='En línea ✓';});
+  db.collection('projects').onSnapshot(s=>{s.forEach(d=>{projects[d.id]={id:d.id,...d.data()};});renderAll();});
+}
+
+function renderAll(){renderDash();renderClientsTable();renderLicensesTable();}
+
+// ── DASHBOARD ──
+function renderDash(){
+  const cl=Object.values(clients), pr=Object.values(projects);
+  const active=cl.filter(c=>c.status==='active').length;
+  let ok=0,warn=0,crit=0;
+  pr.forEach(p=>{const s=KS.projectStatusLevel(p);if(s==='ok')ok++;else if(s==='warn')warn++;else crit++;});
+  document.getElementById('kc1').textContent=active;
+  document.getElementById('kc2').textContent=pr.length;
+  document.getElementById('kc3').textContent=ok;
+  document.getElementById('kc4').textContent=warn;
+  document.getElementById('kc5').textContent=crit;
+  const grid=document.getElementById('dash-grid');
+  if(!pr.length){grid.innerHTML='<div class="empty"><div class="ei">⚙️</div><div class="et">Sin proyectos activos</div></div>';return;}
+  grid.innerHTML=pr.map(p=>{
+    const cl2=clients[p.clientId]||{name:'—',status:'unknown'};
+    const st=KS.projectStatusLevel(p);
+    const ov=KS.maxOvalityProject(p);
+    const col=KS.ovColor(ov,p.tolerance||0.5);
+    const stL=st==='ok'?'Normal':st==='warn'?'Atención':'Crítico';
+    const lp=cl2.status==='active'?'pgreen':'pred';
+    const ll=cl2.status==='active'?'Activa':'Suspendida';
+    return `<div class="pc" onclick="openDp('${p.clientId}','${p.id}')">
+      <div class="pctop">
+        <div><div class="pcn">${p.name} <span style="color:var(--t3);font-weight:400">${p.code}</span></div>
+        <div style="font-size:10px;color:var(--t2);margin-top:1px">${cl2.name}</div></div>
+        <span class="pill ${lp}">${ll}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:baseline;margin:8px 0 4px">
+        <span style="font-size:22px;font-weight:800;font-family:var(--mono);color:${col}">${ov.toFixed(2)}%</span>
+        <span style="font-size:10px;color:${col}">${stL}</span>
+      </div>
+      <canvas id="dc-${p.id}" height="55" style="width:100%;border-radius:5px;"></canvas>
+      <div class="hm-leg"><span>OK</span><div class="hm-bar"></div><span>Crítico</span></div>
+      <div style="display:flex;gap:8px;font-size:10px;color:var(--t2);margin-top:6px">
+        <span>⌀${p.diam}mm</span><span>${p.sections} secc.</span><span>${p.length}m</span><span>Tol:±${p.tolerance||0.5}%</span>
+      </div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>pr.forEach(p=>KS.drawKilnCylinder(document.getElementById('dc-'+p.id),p,null,55,null)),60);
+}
+
+// ── CLIENTS TABLE ──
+function renderClientsTable(){
+  const cl=Object.values(clients);
+  const tbl=document.getElementById('ctable');
+  if(!cl.length){tbl.innerHTML='<div class="empty"><div class="ei">🏭</div><div class="et">Sin clientes</div></div>';return;}
+  tbl.innerHTML=`<div class="thead"><span>Cliente</span><span>Estado</span><span>Plan</span><span>Vencimiento</span><span>Código</span><span>Acciones</span></div>`
+  +cl.map(c=>{
+    const exp=new Date(c.expiresAt),now=new Date();
+    const d=Math.ceil((exp-now)/(864e5));
+    const dc=d<0?'var(--red)':d<15?'var(--yellow)':'var(--t2)';
+    const pl={'monthly':'Mensual','quarterly':'Trimestral','biannual':'Semestral','annual':'Anual'}[c.plan]||c.plan;
+    return `<div class="trow" onclick="openDp('${c.id}')">
+      <div><div class="cn">${c.name}</div><div class="cs">${c.email||'—'}</div></div>
+      <span class="pill ${c.status==='active'?'pgreen':'pred'}">${c.status==='active'?'Activa':'Suspendida'}</span>
+      <span style="font-size:12px;font-weight:600">${pl}</span>
+      <span style="font-family:var(--mono);font-size:11px;color:${dc}">${c.expiresAt} ${d>=0?`(${d}d)`:'(venc.)'}</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--cyan)">${c.projectCode||'—'}</span>
+      <div class="ra" onclick="event.stopPropagation()">
+        <button class="bsm" style="padding:3px 8px;font-size:10px" onclick="openRenew('${c.id}')">Renovar</button>
+        <button class="bsm ${c.status==='active'?'bdanger':''}" style="padding:3px 8px;font-size:10px" onclick="toggleStatus('${c.id}')">${c.status==='active'?'Suspender':'Activar'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── LICENSES TABLE ──
+function renderLicensesTable(){
+  const cl=Object.values(clients).sort((a,b)=>new Date(a.expiresAt)-new Date(b.expiresAt));
+  const tbl=document.getElementById('ltable');
+  if(!cl.length){tbl.innerHTML='<div class="empty"><div class="ei">🔑</div><div class="et">Sin licencias</div></div>';return;}
+  const now=new Date();
+  tbl.innerHTML=`<div class="thead" style="grid-template-columns:1fr 110px 110px 110px 120px 130px"><span>Cliente</span><span>Plan</span><span>Inicio</span><span>Vence</span><span>Días rest.</span><span>Acciones</span></div>`
+  +cl.map(c=>{
+    const d=Math.ceil((new Date(c.expiresAt)-now)/(864e5));
+    const bc=d<0?'var(--red)':d<15?'var(--yellow)':d<60?'var(--fire)':'var(--green)';
+    const bw=Math.max(0,Math.min(100,d/365*100));
+    const pl={'monthly':'Mensual','quarterly':'Trimestral','biannual':'Semestral','annual':'Anual'}[c.plan]||c.plan;
+    return `<div class="trow" style="grid-template-columns:1fr 110px 110px 110px 120px 130px;cursor:default">
+      <div><div class="cn">${c.name}</div><div class="cs">${c.email}</div></div>
+      <span style="font-size:12px;font-weight:600">${pl}</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--t2)">${c.startDate||'—'}</span>
+      <span style="font-family:var(--mono);font-size:11px;color:${d<0?'var(--red)':d<15?'var(--yellow)':'var(--t1)'}">${c.expiresAt}</span>
+      <div>
+        <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:${bc}">${d<0?'Vencida':d+'d'}</div>
+        <div style="height:3px;background:var(--s3);border-radius:2px;margin-top:3px">
+          <div style="height:100%;width:${bw}%;background:${bc};border-radius:2px"></div>
+        </div>
+      </div>
+      <div class="ra">
+        <button class="bsm" style="padding:3px 8px;font-size:10px" onclick="openRenew('${c.id}')">Renovar</button>
+        <button class="bsm ${c.status==='active'?'bdanger':''}" style="padding:3px 8px;font-size:10px" onclick="toggleStatus('${c.id}')">${c.status==='active'?'Suspender':'Activar'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── DETAIL PANEL ──
+function openDp(clientId, preProj=null){
+  const c=clients[clientId]; if(!c) return;
+  const cps=Object.values(projects).filter(p=>p.clientId===clientId);
+  const exp=new Date(c.expiresAt), d=Math.ceil((exp-new Date())/(864e5));
+  document.getElementById('dp-title').textContent=c.name;
+  document.getElementById('dp-sub').textContent=`${c.email} · Código: ${c.projectCode||'—'}`;
+
+  let html=`<div class="seclbl">Información del cliente</div>
+  <div class="igrid">
+    <div class="iitem"><div class="ilbl">Estado</div><div class="ival" style="color:${c.status==='active'?'var(--green)':'var(--red)'}">${c.status==='active'?'Activa':'Suspendida'}</div></div>
+    <div class="iitem"><div class="ilbl">Días restantes</div><div class="ival" style="color:${d<0?'var(--red)':d<15?'var(--yellow)':'var(--green)'}">${d<0?'Vencida':d+' días'}</div></div>
+    <div class="iitem"><div class="ilbl">Plan</div><div class="ival">${{'monthly':'Mensual','quarterly':'Trimestral','biannual':'Semestral','annual':'Anual'}[c.plan]||c.plan}</div></div>
+    <div class="iitem"><div class="ilbl">Vence</div><div class="ival" style="font-size:11px">${c.expiresAt}</div></div>
+    <div class="iitem"><div class="ilbl">Código</div><div class="ival" style="color:var(--cyan);letter-spacing:1px">${c.projectCode||'—'}</div></div>
+    <div class="iitem"><div class="ilbl">Hornos</div><div class="ival">${cps.length}</div></div>
+  </div>
+  <div style="display:flex;gap:7px;margin-bottom:18px;flex-wrap:wrap">
+    <button class="bsm bfire" onclick="openRenew('${c.id}')">Renovar</button>
+    <button class="bsm ${c.status==='active'?'bdanger':''}" onclick="toggleStatus('${c.id}')">${c.status==='active'?'Suspender':'Activar'}</button>
+    <button class="bsm" onclick="copyLink('${c.id}')">📋 Enlace fábrica</button>
+  </div>
+  <div class="seclbl">Hornos / Proyectos (${cps.length})</div>`;
+
+  if(!cps.length) html+='<div class="empty" style="padding:24px"><div class="et">Sin hornos registrados</div></div>';
+  else html+=cps.map(p=>{
+    const ov=KS.maxOvalityProject(p), tol=p.tolerance||0.5;
+    const col=KS.ovColor(ov,tol);
+    return `<div class="pc">
+      <div class="pctop">
+        <div><div class="pcn">${p.name} <span style="color:var(--t3);font-weight:400">${p.code}</span></div>
+        <div style="font-size:10px;color:var(--t2)">⌀${p.diam}mm · ${p.sections} secc. · ${p.length}m</div></div>
+        <div style="text-align:right"><div style="font-size:18px;font-weight:800;font-family:var(--mono);color:${col}">${ov.toFixed(2)}%</div>
+        <div style="font-size:9px;color:${col}">ovalidad máx</div></div>
+      </div>
+      <canvas id="dp-k-${p.id}" height="65" style="width:100%;border-radius:5px;margin-top:8px"></canvas>
+      <div class="hm-leg"><span>OK</span><div class="hm-bar"></div><span>Crítico</span></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('dp-body').innerHTML=html;
+  document.getElementById('detail-panel').classList.add('open');
+  setTimeout(()=>cps.forEach(p=>KS.drawKilnCylinder(document.getElementById('dp-k-'+p.id),p,null,65,null)),80);
+}
+function closeDp(){document.getElementById('detail-panel').classList.remove('open');}
+
+// ── ACTIONS ──
+function toggleStatus(id){
+  const c=clients[id]; if(!c) return;
+  const ns=c.status==='active'?'suspended':'active';
+  if(!confirm(`¿${ns==='active'?'Activar':'Suspender'} acceso a "${c.name}"?`)) return;
+  c.status=ns;
+  if(db) db.collection('clients').doc(id).update({status:ns});
+  renderAll();
+  showToast(`Cliente ${ns==='active'?'activado':'suspendido'}`,ns==='active'?'ok':'info');
+}
+function openRenew(id){
+  renewId=id; const c=clients[id];
+  document.getElementById('renew-name').textContent=c?.name||'—';
+  document.getElementById('rf').value=new Date().toISOString().slice(0,10);
+  document.getElementById('mo-renew').classList.add('open');
+}
+function confirmRenew(){
+  const c=clients[renewId]; if(!c) return;
+  const plan=document.getElementById('rp').value;
+  const from=new Date(document.getElementById('rf').value);
+  const months={'monthly':1,'quarterly':3,'biannual':6,'annual':12}[plan]||1;
+  from.setMonth(from.getMonth()+months);
+  const exp=from.toISOString().slice(0,10);
+  c.plan=plan; c.expiresAt=exp; c.status='active';
+  if(db) db.collection('clients').doc(renewId).update({plan,expiresAt:exp,status:'active'});
+  document.getElementById('mo-renew').classList.remove('open');
+  renderAll(); showToast(`Renovado hasta ${exp}`,'ok');
+}
+function copyLink(id){
+  const c=clients[id]; if(!c) return;
+  const base=location.href.replace('index.html','').replace(/\/?$/,'/');
+  const url=`${base}fabrica.html?code=${c.projectCode}`;
+  navigator.clipboard.writeText(url).then(()=>showToast('Enlace copiado','ok'));
+}
+function copyAllCreds(){
+  const text=`Email: ${document.getElementById('gc-email').textContent}\nContraseña: ${document.getElementById('gc-pass').textContent}\nCódigo: ${document.getElementById('gc-code').textContent}\nURL: ${document.getElementById('gc-url').textContent}`;
+  navigator.clipboard.writeText(text).then(()=>showToast('Credenciales copiadas','ok'));
+}
+
+// ── CREATE CLIENT ──
+function genCode(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const code=Array.from({length:8},()=>c[Math.floor(Math.random()*c.length)]).join('');
+  document.getElementById('cf-code').value=code; return code;
+}
+function openMC(){genCode();document.getElementById('gcreds').style.display='none';document.getElementById('btn-create').style.display='';document.getElementById('mo-client').classList.add('open');}
+function closeMC(){document.getElementById('mo-client').classList.remove('open');}
+async function createClient(){
+  const name=document.getElementById('cf-name').value.trim();
+  const email=document.getElementById('cf-email').value.trim().toLowerCase();
+  const pass=document.getElementById('cf-pass').value.trim();
+  const plan=document.getElementById('cf-plan').value;
+  const start=document.getElementById('cf-start').value;
+  const code=document.getElementById('cf-code').value;
+  const hornos=parseInt(document.getElementById('cf-hornos').value)||1;
+  if(!name||!email||pass.length<8){showToast('Completa todos los campos (contraseña mín. 8 chars)','err');return;}
+  const months={'monthly':1,'quarterly':3,'biannual':6,'annual':12}[plan]||1;
+  const exp=new Date(start); exp.setMonth(exp.getMonth()+months);
+  const expiresAt=exp.toISOString().slice(0,10);
+  const nc={name,email,plan,status:'active',startDate:start,expiresAt,projectCode:code,hornos,createdAt:new Date().toISOString()};
+  let cid='local-'+Date.now();
+  if(db){
+    try{
+      const ref=await db.collection('clients').add(nc); cid=ref.id;
+      await db.collection('users').add({clientId:cid,email,role:'fabrica'});
+      // Create Firebase Auth user
+      const tempAuth=firebase.auth();
+      await tempAuth.createUserWithEmailAndPassword(email,pass)
+        .then(uc=>db.collection('users').doc(uc.user.uid).set({clientId:cid,email,role:'fabrica'}))
+        .catch(()=>{});
+    }catch(e){showToast('Firebase: '+e.message,'err');return;}
+  } else { clients[cid]={id:cid,...nc}; }
+  const base=location.href.replace('index.html','').replace(/\/?$/,'/');
+  document.getElementById('gc-email').textContent=email;
+  document.getElementById('gc-pass').textContent=pass;
+  document.getElementById('gc-code').textContent=code;
+  document.getElementById('gc-url').textContent=`${base}fabrica.html?code=${code}`;
+  document.getElementById('gcreds').style.display='block';
+  document.getElementById('btn-create').style.display='none';
+  renderAll(); showToast('Cliente creado','ok');
+}
+
+// ── NAV ──
+function showPg(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nv').forEach(n=>n.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  document.getElementById('nv-'+id).classList.add('active');
+}
+function showToast(msg,t='info'){const el=document.getElementById('toast');el.textContent=msg;el.className=`toast ${t} show`;setTimeout(()=>el.classList.remove('show'),3200);}
+window.addEventListener('resize',renderDash);
+</script>
+</body>
+</html>

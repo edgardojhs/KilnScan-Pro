@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KilnScan Pro — Portal Fábrica</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+<script src="kilnscan.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#07090c;--s1:#0c0f14;--s2:#111520;--s3:#171d2c;--s4:#1e2638;
+  --b1:#1a2236;--b2:#253048;--b3:#2f3d5a;
+  --cyan:#00d4ff;--cyan2:rgba(0,212,255,.08);--cyan3:rgba(0,212,255,.2);
+  --green:#39e07a;--green2:rgba(57,224,122,.08);
+  --yellow:#f5c518;--yellow2:rgba(245,197,24,.08);
+  --red:#ff4d4d;--red2:rgba(255,77,77,.08);
+  --t1:#d8e4f2;--t2:#5e7090;--t3:#293548;--t4:#131d2e;
+  --mono:'DM Mono',monospace;--sans:'Barlow',sans-serif;--cond:'Barlow Condensed',sans-serif;
+  --r:8px;--r2:14px;--r3:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100vh;}
+
+/* ── LOGIN ── */
+#login-screen{
+  position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;
+  background-image:radial-gradient(ellipse 50% 50% at 15% 50%,rgba(0,212,255,.03),transparent),radial-gradient(ellipse 50% 40% at 85% 50%,rgba(57,224,122,.025),transparent);
+}
+.lwrap{display:flex;max-width:800px;width:94vw;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);overflow:hidden;}
+.lleft{flex:1;padding:44px 36px;background:linear-gradient(140deg,var(--s2),var(--s3));border-right:1px solid var(--b1);display:flex;flex-direction:column;justify-content:center;}
+.lright{width:330px;padding:36px;display:flex;flex-direction:column;justify-content:center;}
+.lbrand{display:flex;align-items:center;gap:11px;margin-bottom:28px;}
+.lbrand-i{width:40px;height:40px;background:var(--cyan);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;}
+.lbrand-n{font-family:var(--cond);font-size:20px;font-weight:800;letter-spacing:.4px;}
+.lbrand-s{font-size:10px;color:var(--t2);margin-top:1px;}
+.lhead{font-family:var(--cond);font-size:30px;font-weight:800;line-height:1.1;letter-spacing:.5px;margin-bottom:14px;}
+.lhead span{color:var(--cyan);}
+.ldesc{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:20px;}
+.lfeat{display:flex;flex-direction:column;gap:9px;}
+.lfi{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--t2);}
+.lfd{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex-shrink:0;}
+.ltitle{font-family:var(--cond);font-size:19px;font-weight:800;letter-spacing:.3px;margin-bottom:3px;}
+.lsub{font-size:12px;color:var(--t2);margin-bottom:20px;}
+.fg{margin-bottom:12px;}
+.fl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;display:block;}
+.fi{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:9px 12px;font-size:13px;font-family:var(--sans);color:var(--t1);transition:border-color .15s;}
+.fi:focus{outline:none;border-color:var(--cyan);}
+.fi::placeholder{color:var(--t3);}
+.btnl{width:100%;padding:11px;background:var(--cyan);border:none;border-radius:var(--r);color:#000;font-size:13px;font-weight:700;font-family:var(--cond);cursor:pointer;letter-spacing:.6px;transition:all .15s;margin-top:4px;}
+.btnl:hover{opacity:.9;}
+.lerr{font-size:11px;color:var(--red);margin-top:8px;min-height:16px;}
+.susp{background:var(--red2);border:1px solid rgba(255,77,77,.18);border-radius:var(--r);padding:12px;font-size:12px;color:var(--red);display:none;margin-top:14px;line-height:1.5;}
+@media(max-width:580px){.lleft{display:none;}.lright{width:100%;padding:28px 20px;}}
+
+/* ── APP ── */
+#app{display:none;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 22px;height:54px;border-bottom:1px solid var(--b1);background:var(--s1);position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:9px;}
+.logo-i{width:30px;height:30px;background:var(--cyan);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.logo-t{font-family:var(--cond);font-size:16px;font-weight:700;letter-spacing:.4px;}
+.logo-b{font-size:10px;font-weight:700;background:var(--cyan2);color:var(--cyan);border:1px solid var(--cyan3);padding:2px 8px;border-radius:20px;letter-spacing:.4px;}
+.tbr{display:flex;align-items:center;gap:10px;}
+.live-p{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);background:var(--green2);border:1px solid rgba(57,224,122,.18);padding:3px 10px;border-radius:20px;}
+.ldot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.bsm{padding:6px 13px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--cond);transition:all .15s;border:1px solid var(--b2);background:var(--s2);color:var(--t1);letter-spacing:.2px;}
+.bsm:hover{background:var(--s3);}
+.bcyan{background:var(--cyan);border-color:var(--cyan);color:#000;}
+.bcyan:hover{opacity:.9;}
+
+/* ── SHELL ── */
+.shell{display:flex;height:calc(100vh - 54px);}
+.hsidebar{width:220px;min-width:220px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;}
+.hsh{padding:14px;border-bottom:1px solid var(--b1);}
+.hsh-lbl{font-size:9px;font-weight:700;color:var(--t4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.ccard{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:11px;}
+.ccn{font-family:var(--cond);font-size:13px;font-weight:700;margin-bottom:2px;}
+.ccm{font-size:10px;color:var(--t2);}
+.hl{flex:1;overflow-y:auto;padding:7px;}
+.hi{padding:10px 11px;border-radius:var(--r);cursor:pointer;border:1px solid transparent;margin-bottom:3px;transition:all .15s;}
+.hi:hover{background:var(--s3);}
+.hi.active{background:var(--cyan2);border-color:var(--cyan3);}
+.hin{font-family:var(--cond);font-size:13px;font-weight:700;margin-bottom:2px;}
+.hic{font-size:9px;font-family:var(--mono);color:var(--t2);}
+.hiov{font-size:10px;font-weight:600;margin-top:3px;}
+.hbot{padding:10px;border-top:1px solid var(--b1);}
+.logoutbtn{display:flex;align-items:center;gap:7px;padding:8px 11px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:600;color:var(--t2);font-family:var(--sans);width:100%;transition:all .15s;}
+.logoutbtn:hover{background:var(--s3);color:var(--t1);}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;background:var(--bg);}
+.ci{padding:22px;}
+.horno-hdr{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.htitle{font-family:var(--cond);font-size:22px;font-weight:800;letter-spacing:.5px;}
+.hsub{font-size:12px;color:var(--t2);margin-top:3px;}
+.sbadge{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--cond);letter-spacing:.4px;}
+.bok{background:var(--green2);color:var(--green);border:1px solid rgba(57,224,122,.18);}
+.bwarn{background:var(--yellow2);color:var(--yellow);border:1px solid rgba(245,197,24,.18);}
+.bcrit{background:var(--red2);color:var(--red);border:1px solid rgba(255,77,77,.18);}
+
+/* ── KPI ── */
+.krow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.kc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:15px;position:relative;overflow:hidden;}
+.kc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kc.cc::after{background:var(--cyan);}.kc.cg::after{background:var(--green);}.kc.cy::after{background:var(--yellow);}.kc.cr::after{background:var(--red);}
+.klbl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:8px;}
+.kval{font-size:24px;font-weight:700;letter-spacing:-1px;font-family:var(--mono);}
+.kval.cc{color:var(--cyan);}.kval.cg{color:var(--green);}.kval.cy{color:var(--yellow);}.kval.cr{color:var(--red);}
+.ksub{font-size:10px;color:var(--t3);margin-top:4px;}
+
+/* ── PANELS ── */
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);overflow:hidden;}
+.pf{grid-column:1/-1;}
+.phead{padding:13px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.ptitle{font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:.2px;}
+.pbody{padding:15px;}
+
+/* ── SECTION STRIP ── */
+.sstrip{display:flex;gap:5px;overflow-x:auto;padding-bottom:5px;margin-bottom:14px;scrollbar-width:thin;}
+.sbtn{flex-shrink:0;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--cond);letter-spacing:.2px;border:1px solid var(--b1);background:var(--s2);color:var(--t2);transition:all .15s;}
+.sbtn:hover{background:var(--s3);color:var(--t1);}
+.sbtn.active{background:var(--cyan2);border-color:var(--cyan3);color:var(--cyan);}
+.sbtn.sg{border-left:3px solid var(--green);}.sbtn.sy{border-left:3px solid var(--yellow);}.sbtn.sr{border-left:3px solid var(--red);}
+
+/* ── INPUT MODE TOGGLE ── */
+.mode-tog{display:flex;background:var(--s2);border:1px solid var(--b1);border-radius:6px;overflow:hidden;}
+.mt-btn{padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--cond);letter-spacing:.2px;border:none;background:none;color:var(--t2);transition:all .15s;}
+.mt-btn.active{background:var(--cyan);color:#000;}
+
+/* ── MEAS GRID CARTESIAN ── */
+.cart-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:10px;}
+.cart-col{display:flex;flex-direction:column;gap:5px;}
+.col-hdr{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;padding:5px 8px;background:var(--s3);border-radius:5px;text-align:center;}
+.ptin{background:var(--s2);border:1px solid var(--b1);border-radius:5px;padding:7px 8px;font-size:12px;font-family:var(--mono);color:var(--t1);width:100%;transition:border-color .15s;text-align:center;}
+.ptin:focus{outline:none;border-color:var(--cyan);}
+.ptin.dev-pos{border-color:rgba(255,77,77,.4);color:var(--red);}
+.ptin.dev-neg{border-color:rgba(96,165,250,.4);color:var(--blue,#60a5fa);}
+.ptin.dev-ok{border-color:rgba(57,224,122,.3);color:var(--green);}
+.pt-lbl{font-size:9px;color:var(--t3);text-align:center;margin-top:1px;}
+
+/* ── MEAS GRID POLAR ── */
+.polar-grid{display:flex;flex-direction:column;gap:6px;}
+.polar-row{display:grid;grid-template-columns:40px 1fr 1fr 70px 70px 26px;gap:6px;align-items:center;}
+.polar-hdr{font-size:10px;font-weight:700;color:var(--t4);letter-spacing:.5px;text-transform:uppercase;padding-bottom:5px;border-bottom:1px solid var(--b1);}
+.inp{background:var(--s2);border:1px solid var(--b1);border-radius:5px;padding:7px 9px;font-size:12px;font-family:var(--mono);color:var(--t1);width:100%;transition:border-color .15s;}
+.inp:focus{outline:none;border-color:var(--cyan);}
+.dv{font-family:var(--mono);font-size:11px;text-align:right;font-weight:500;}
+.ix{font-family:var(--mono);font-size:10px;color:var(--t3);text-align:center;}
+.dbtn{background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:2px;transition:color .1s;}
+.dbtn:hover{color:var(--red);}
+
+/* ── REGRESSION RESULTS ── */
+.reg-box{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px;margin-top:10px;}
+.reg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.reg-item{text-align:center;}
+.reg-lbl{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px;}
+.reg-val{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--cyan);}
+
+/* ── CSV ZONE ── */
+.csvz{border:1px dashed var(--b2);border-radius:var(--r);padding:11px 13px;text-align:center;color:var(--t2);font-size:11px;cursor:pointer;transition:all .15s;margin-bottom:12px;}
+.csvz:hover{background:var(--s2);border-color:var(--cyan);color:var(--t1);}
+
+/* ── SAVE BAR ── */
+.savebar{position:sticky;bottom:0;background:var(--s1);border-top:1px solid var(--b1);padding:11px 22px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--t2);}
+.udot{width:6px;height:6px;border-radius:50%;background:var(--yellow);display:none;flex-shrink:0;}
+.udot.show{display:inline-block;animation:blink .8s infinite;}
+
+/* ── LOADING / EMPTY ── */
+.loading{display:flex;align-items:center;justify-content:center;height:50vh;flex-direction:column;gap:14px;color:var(--t2);}
+.sp{width:30px;height:30px;border:2px solid var(--b1);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── HM LEGEND ── */
+.hml{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--t3);margin-top:6px;}
+.hmb{flex:1;height:5px;border-radius:3px;background:linear-gradient(to right,#39e07a,#f5c518,#ff4d4d);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:70px;right:22px;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:10px 16px;font-size:12px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.5);transform:translateY(70px);opacity:0;transition:all .28s;z-index:500;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-left:3px solid var(--green);}.toast.info{border-left:3px solid var(--cyan);}.toast.err{border-left:3px solid var(--red);}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px;}
+@media(max-width:860px){.krow{grid-template-columns:repeat(2,1fr);}.panels{grid-template-columns:1fr;}.hsidebar{width:190px;min-width:190px;}}
+@media(max-width:580px){.hsidebar{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lwrap">
+    <div class="lleft">
+      <div class="lbrand">
+        <div class="lbrand-i">🏭</div>
+        <div><div class="lbrand-n" id="l-empresa">KILNSCAN PRO</div><div class="lbrand-s">Portal de Fábrica</div></div>
+      </div>
+      <div class="lhead">Análisis de<br><span>excentricidad</span><br>y ovalidad</div>
+      <div class="ldesc">Monitoreo dimensional en tiempo real para hornos cementeros. Ingresa coordenadas cartesianas X,Y y obtén el diámetro óptimo por regresión circular.</div>
+      <div class="lfeat">
+        <div class="lfi"><span class="lfd"></span>Regresión circular por mínimos cuadrados (Kasa)</div>
+        <div class="lfi"><span class="lfd"></span>Vista cilíndrica inclinada con mapa de calor</div>
+        <div class="lfi"><span class="lfd"></span>Entrada cartesiana X,Y o polar ángulo/radio</div>
+        <div class="lfi"><span class="lfd"></span>Cálculo automático de ovalidad, excentricidad y RMSE</div>
+        <div class="lfi"><span class="lfd"></span>Sincronización en tiempo real con el panel maestro</div>
+      </div>
+    </div>
+    <div class="lright">
+      <div class="ltitle">Acceso Fábrica</div>
+      <div class="lsub">Ingresa con tus credenciales de acceso</div>
+      <div class="fg"><label class="fl">Correo electrónico</label><input class="fi" id="le" type="email" placeholder="planta@fabrica.com"></div>
+      <div class="fg"><label class="fl">Contraseña</label><input class="fi" id="lp" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="fg"><label class="fl">Código de proyecto</label><input class="fi" id="lc" placeholder="Ej: ARG-N1-7X3K" style="font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
+      <button class="btnl" onclick="doLogin()">INGRESAR</button>
+      <div class="lerr" id="lerr"></div>
+      <div class="susp" id="susp">⚠️ Tu licencia ha vencido o ha sido suspendida. Contacta a tu proveedor de mantenimiento.</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-i">🏭</div>
+      <span class="logo-t" id="top-empresa">KILNSCAN PRO</span>
+      <span class="logo-b" id="client-badge">FÁBRICA</span>
+    </div>
+    <div class="tbr">
+      <div class="live-p"><div class="ldot"></div><span id="livetxt">En vivo</span></div>
+    </div>
+  </div>
+
+  <div class="shell">
+    <!-- HORNO SIDEBAR -->
+    <div class="hsidebar">
+      <div class="hsh">
+        <div class="hsh-lbl">Planta</div>
+        <div class="ccard">
+          <div class="ccn" id="cc-name">—</div>
+          <div class="ccm" id="cc-meta">—</div>
+        </div>
+      </div>
+      <div style="padding:10px 11px 3px;font-size:9px;font-weight:700;color:var(--t4);letter-spacing:1px;text-transform:uppercase;">Hornos</div>
+      <div class="hl" id="horno-list"></div>
+      <div class="hbot">
+        <button class="logoutbtn" onclick="doLogout()">⏻ &nbsp;Cerrar sesión</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <div id="ct-loading" class="loading"><div class="sp"></div><span>Cargando…</span></div>
+      <div id="ct-empty" style="display:none" class="loading"><span style="color:var(--t3)">Sin hornos registrados para tu cuenta</span></div>
+      <div id="ct-horno" style="display:none">
+        <div class="ci">
+          <!-- Header -->
+          <div class="horno-hdr">
+            <div><div class="htitle" id="h-title">—</div><div class="hsub" id="h-sub">—</div></div>
+            <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+              <div class="sbadge" id="h-badge">—</div>
+              <button class="bsm" onclick="document.getElementById('csv-inp').click()">↑ CSV</button>
+              <button class="bsm bcyan" onclick="saveSection()">💾 Guardar</button>
+              <input type="file" id="csv-inp" accept=".csv" style="display:none" onchange="handleCSV(event)">
+            </div>
+          </div>
+          <!-- KPIs -->
+          <div class="krow">
+            <div class="kc cc"><div class="klbl">Ovalidad (R. circular)</div><div class="kval cc" id="kpi-ov">—</div><div class="ksub" id="kpi-ov-s">Regresión Kasa</div></div>
+            <div class="kc cg"><div class="klbl">Radio ajustado</div><div class="kval cg" id="kpi-r">—</div><div class="ksub">mm (mejor estimado)</div></div>
+            <div class="kc cy"><div class="klbl">Centro ajustado</div><div class="kval cy" id="kpi-c">—</div><div class="ksub">X, Y respecto al origen</div></div>
+            <div class="kc cr"><div class="klbl">RMSE ajuste</div><div class="kval cr" id="kpi-rmse">—</div><div class="ksub">Error medio de regresión</div></div>
+          </div>
+          <!-- Section strip -->
+          <div class="sstrip" id="sec-strip"></div>
+          <!-- Panels -->
+          <div class="panels">
+            <!-- Cilindro 3D -->
+            <div class="panel pf">
+              <div class="phead">
+                <span class="ptitle">🔥 Horno — Cilindro inclinado con mapa de calor</span>
+                <span style="font-size:10px;color:var(--t2)">Haz clic en una sección</span>
+              </div>
+              <div class="pbody">
+                <canvas id="kiln-canvas" height="210"></canvas>
+                <div class="hml"><span>Normal</span><div class="hmb"></div><span>Crítico</span></div>
+              </div>
+            </div>
+            <!-- Polar chart -->
+            <div class="panel">
+              <div class="phead">
+                <span class="ptitle">📐 Sección — <span id="sec-name-lbl">—</span></span>
+              </div>
+              <div class="pbody" style="display:flex;flex-direction:column;align-items:center">
+                <canvas id="sec-chart" height="370" style="max-width:390px;width:100%"></canvas>
+              </div>
+            </div>
+            <!-- Mediciones -->
+            <div class="panel">
+              <div class="phead">
+                <span class="ptitle">📋 Mediciones</span>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <div class="mode-tog">
+                    <button class="mt-btn active" id="mt-cart" onclick="setMode('cartesian')">X,Y Cartesiano</button>
+                    <button class="mt-btn" id="mt-polar" onclick="setMode('polar')">Ángulo / Radio</button>
+                  </div>
+                  <div class="udot" id="udot"></div>
+                </div>
+              </div>
+              <div class="pbody">
+                <div class="csvz" onclick="document.getElementById('csv-inp').click()">
+                  📂 Importar CSV — cartesiano: <code>x,y</code> · polar: <code>ángulo,radio</code>
+                </div>
+                <div id="meas-container"></div>
+                <!-- Regression results box -->
+                <div class="reg-box" id="reg-box" style="display:none">
+                  <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.7px;text-transform:uppercase">Resultado de regresión circular (Kasa)</div>
+                  <div class="reg-grid">
+                    <div class="reg-item"><div class="reg-lbl">Radio ajustado</div><div class="reg-val" id="rr-r">—</div></div>
+                    <div class="reg-item"><div class="reg-lbl">Centro X</div><div class="reg-val" id="rr-cx">—</div></div>
+                    <div class="reg-item"><div class="reg-lbl">Centro Y</div><div class="reg-val" id="rr-cy">—</div></div>
+                    <div class="reg-item"><div class="reg-lbl">Ovalidad</div><div class="reg-val" id="rr-ov" style="color:var(--yellow)">—</div></div>
+                    <div class="reg-item"><div class="reg-lbl">RMSE</div><div class="reg-val" id="rr-rmse">—</div></div>
+                    <div class="reg-item"><div class="reg-lbl">Puntos</div><div class="reg-val" id="rr-n">—</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Save bar -->
+        <div class="savebar">
+          <span id="save-status">Todos los cambios guardados</span>
+          <div style="display:flex;gap:7px">
+            <button class="bsm" onclick="exportCSV()">↓ Exportar CSV</button>
+            <button class="bsm bcyan" onclick="saveSection()">💾 Guardar sección</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CFG=window.KS_CONFIG||{};
+const FB_CFG=CFG.firebase||{};
+const DEMO=!FB_CFG.apiKey||FB_CFG.apiKey.startsWith('PEGA_AQUI');
+
+let db=null,auth=null;
+let myClient=null,myProjects=[],curP=null,curS=0;
+let unsaved=false;
+
+// ── DEMO DATA ──
+const DEMO_C={id:"c1",name:"Cementos Argos — Planta Norte",email:"argos@planta.com",plan:"quarterly",status:"active",expiresAt:"2026-12-31",projectCode:"ARG-N1-7X3K"};
+function makeDemoP(id,name,code,diam,nsec,ovs){
+  const sd={};
+  ovs.forEach((ov,i)=>{
+    const s=KS.generateDemoSection(diam,ov);
+    s.name=`S${i+1} — ${['Entrada','Zona fría','Central','Quemador','Zona caliente','Salida'][i]||'S'+(i+1)}`;
+    sd[i]=s;
+  });
+  return{id,clientId:"c1",name,code,diam,sections:nsec,length:nsec===6?75:68,tolerance:0.5,inclination:3.5,sections_data:sd};
+}
+const DEMO_PS=[
+  makeDemoP("p1","Horno 1","HRN-01",4200,6,[0.18,0.12,0.64,0.38,1.02,0.21]),
+  makeDemoP("p2","Horno 2","HRN-02",4000,5,[0.10,0.09,1.24,0.08,0.11])
+];
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded',()=>{
+  if(CFG.empresaCorto){
+    document.getElementById('l-empresa').textContent=CFG.empresaCorto;
+    document.getElementById('top-empresa').textContent=CFG.empresaCorto;
+  }
+  const params=new URLSearchParams(location.search);
+  const uc=params.get('code');
+  if(uc) document.getElementById('lc').value=uc.toUpperCase();
+  if(DEMO){loadDemo();return;}
+  try{
+    firebase.initializeApp(FB_CFG);
+    auth=firebase.auth();
+    db=firebase.firestore();
+    auth.onAuthStateChanged(async u=>{
+      if(u){
+        const ud=await db.collection('users').doc(u.uid).get();
+        if(ud.exists){
+          const cd=await db.collection('clients').doc(ud.data().clientId).get();
+          if(cd.exists){myClient={id:cd.id,...cd.data()};if(myClient.status!=='active'){showSusp();return;}doEnter();}
+        }
+      }
+    });
+  }catch(e){console.warn(e);}
+});
+
+function loadDemo(){myClient={...DEMO_C};myProjects=JSON.parse(JSON.stringify(DEMO_PS));document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('livetxt').textContent='Modo demo';afterLoad();}
+
+async function doLogin(){
+  const e=document.getElementById('le').value.trim().toLowerCase();
+  const p=document.getElementById('lp').value;
+  const c=document.getElementById('lc').value.trim().toUpperCase();
+  const err=document.getElementById('lerr');
+  err.textContent='';document.getElementById('susp').style.display='none';
+  if(DEMO){loadDemo();return;}
+  try{
+    const cr=await auth.signInWithEmailAndPassword(e,p);
+    const ud=await db.collection('users').doc(cr.user.uid).get();
+    if(!ud.exists){auth.signOut();err.textContent='Usuario no encontrado';return;}
+    const cd=await db.collection('clients').doc(ud.data().clientId).get();
+    if(!cd.exists){auth.signOut();err.textContent='Cliente no encontrado';return;}
+    myClient={id:cd.id,...cd.data()};
+    if(c&&myClient.projectCode&&myClient.projectCode!==c){auth.signOut();err.textContent='Código de proyecto incorrecto';return;}
+    if(myClient.status!=='active'){auth.signOut();showSusp();return;}
+    doEnter();
+  }catch(e2){err.textContent='Credenciales incorrectas';}
+}
+function showSusp(){document.getElementById('susp').style.display='block';}
+function doLogout(){if(!DEMO)auth?.signOut();myClient=null;myProjects=[];curP=null;document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';}
+function doEnter(){document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';if(db)subscribeProjects(myClient.id);}
+
+function subscribeProjects(cid){
+  db.collection('projects').where('clientId','==',cid).onSnapshot(snap=>{
+    myProjects=[];snap.forEach(d=>myProjects.push({id:d.id,...d.data()}));
+    document.getElementById('livetxt').textContent='En vivo ✓';
+    afterLoad();
+    if(curP){const upd=myProjects.find(p=>p.id===curP.id);if(upd){curP=upd;refreshView();}}
+  });
+}
+
+function afterLoad(){
+  document.getElementById('cc-name').textContent=myClient?.name||'—';
+  document.getElementById('client-badge').textContent=(myClient?.name||'Fábrica').split('—')[0].trim().slice(0,12);
+  document.getElementById('cc-meta').textContent=`${myProjects.length} horno${myProjects.length!==1?'s':''} registrado${myProjects.length!==1?'s':''}`;
+  renderHornoList();
+  document.getElementById('ct-loading').style.display='none';
+  if(!myProjects.length){document.getElementById('ct-empty').style.display='flex';return;}
+  if(!curP) selectProject(myProjects[0].id);
+}
+
+function renderHornoList(){
+  const list=document.getElementById('horno-list');
+  if(!myProjects.length){list.innerHTML='<div style="padding:10px;font-size:11px;color:var(--t3)">Sin hornos</div>';return;}
+  list.innerHTML=myProjects.map(p=>{
+    const tol=p.tolerance||0.5;
+    const ov=KS.maxOvalityProject(p);
+    const col=KS.ovColor(ov,tol);
+    const st=ov>tol*2?'sr':ov>tol?'sy':'sg';
+    return `<div class="hi ${curP?.id===p.id?'active':''}" onclick="selectProject('${p.id}')">
+      <div class="hin">${p.name}</div>
+      <div class="hic">${p.code} · ⌀${p.diam}mm</div>
+      <div class="hiov ${st}" style="color:${col}">${ov.toFixed(2)}% ovalidad</div>
+    </div>`;
+  }).join('');
+}
+
+function selectProject(id){curP=myProjects.find(p=>p.id===id)||null;curS=0;if(!curP)return;renderHornoList();document.getElementById('ct-horno').style.display='block';document.getElementById('ct-empty').style.display='none';refreshView();}
+
+// ── VIEW REFRESH ──
+function refreshView(){
+  const p=curP;if(!p)return;
+  const tol=p.tolerance||0.5;
+  const ov=KS.maxOvalityProject(p);
+  const bc=ov>tol*2?'bcrit':ov>tol?'bwarn':'bok';
+  const bl=ov>tol*2?'⚠ CRÍTICO':ov>tol?'▲ ATENCIÓN':'✓ NORMAL';
+  document.getElementById('h-title').textContent=`${p.name} — ${p.code}`;
+  document.getElementById('h-sub').textContent=`⌀ ${p.diam}mm nominal · ${p.sections} secciones · ${p.length}m · Inclinación ${p.inclination||3.5}° · Tolerancia ±${tol}%`;
+  document.getElementById('h-badge').textContent=bl;
+  document.getElementById('h-badge').className='sbadge '+bc;
+  updateKPIs(); renderSecStrip(); renderMeasContainer(); renderModeToggle();
+  setTimeout(()=>{KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);drawSecChart();},60);
+}
+
+// ── KPIs ──
+function updateKPIs(){
+  const p=curP;if(!p)return;
+  const sd=p.sections_data?.[curS]||{points:[]};
+  const m=KS.calcSectionMetrics(sd,p.diam);
+  const tol=p.tolerance||0.5;
+  const col=m.ovalityPct>tol*2?'cr':m.ovalityPct>tol?'cy':'cg';
+  setKPI('kpi-ov',m.ovalityPct.toFixed(3)+'%',col);
+  setKPI('kpi-r',m.r.toFixed(3)+' mm','cg');
+  setKPI('kpi-c',`(${m.cx.toFixed(2)}, ${m.cy.toFixed(2)})`,'cy');
+  setKPI('kpi-rmse',m.rmse.toFixed(4)+' mm','cr');
+  // Regression box
+  if(m.fit){
+    document.getElementById('reg-box').style.display='block';
+    document.getElementById('rr-r').textContent=m.r.toFixed(4)+' mm';
+    document.getElementById('rr-cx').textContent=m.cx.toFixed(4)+' mm';
+    document.getElementById('rr-cy').textContent=m.cy.toFixed(4)+' mm';
+    document.getElementById('rr-ov').textContent=m.ovalityPct.toFixed(4)+'%';
+    document.getElementById('rr-rmse').textContent=m.rmse.toFixed(5)+' mm';
+    document.getElementById('rr-n').textContent=m.fit.n;
+  } else document.getElementById('reg-box').style.display='none';
+}
+function setKPI(id,val,cls){const el=document.getElementById(id);if(!el)return;el.textContent=val;if(cls&&el.classList.contains('kval'))el.className='kval '+cls;}
+
+// ── SECTION STRIP ──
+function renderSecStrip(){
+  const p=curP;if(!p)return;
+  const strip=document.getElementById('sec-strip');
+  let h='';
+  for(let i=0;i<p.sections;i++){
+    const sd=p.sections_data?.[i]||{points:[]};
+    const m=KS.calcSectionMetrics(sd,p.diam);
+    const tol=p.tolerance||0.5;
+    const sc=m.ovalityPct>tol*2?'sr':m.ovalityPct>tol?'sy':'sg';
+    h+=`<button class="sbtn ${sc} ${i===curS?'active':''}" onclick="switchSec(${i})">${sd.name||'S'+(i+1)}</button>`;
+  }
+  strip.innerHTML=h;
+}
+
+function switchSec(idx){
+  curS=idx;const p=curP;if(!p)return;
+  const sd=p.sections_data?.[idx]||{};
+  document.getElementById('sec-name-lbl').textContent=sd.name||`Sección ${idx+1}`;
+  renderSecStrip();renderMeasContainer();renderModeToggle();
+  KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);
+  drawSecChart();updateKPIs();
+}
+
+// ── MODE TOGGLE ──
+function renderModeToggle(){
+  const sd=curP?.sections_data?.[curS]||{};
+  const m=sd.inputMode||'cartesian';
+  document.getElementById('mt-cart').classList.toggle('active',m==='cartesian');
+  document.getElementById('mt-polar').classList.toggle('active',m==='polar');
+}
+function setMode(m){
+  const p=curP;if(!p)return;
+  if(!p.sections_data) p.sections_data={};
+  if(!p.sections_data[curS]) p.sections_data[curS]={points:[]};
+  p.sections_data[curS].inputMode=m;
+  renderModeToggle();renderMeasContainer();drawSecChart();updateKPIs();markUnsaved();
+}
+
+// ── MEASUREMENTS CONTAINER ──
+function renderMeasContainer(){
+  const p=curP;if(!p)return;
+  const sd=p.sections_data?.[curS]||{points:[],inputMode:'cartesian'};
+  const mode=sd.inputMode||'cartesian';
+  const pts=sd.points||[];
+  const mc=document.getElementById('meas-container');
+  if(mode==='cartesian') renderCartGrid(pts,sd,p,mc);
+  else renderPolarGrid(pts,sd,p,mc);
+}
+
+// ── CARTESIAN GRID (5 columns of X,Y pairs) ──
+function renderCartGrid(pts,sd,p,mc){
+  const N=5; // always 5 points
+  while(pts.length<N) pts.push({x:0,y:0});
+  let html=`<div style="margin-bottom:8px;font-size:11px;color:var(--t2)">
+    Ingresa las 5 coordenadas X y luego las 5 coordenadas Y — la regresión calcula el círculo óptimo
+  </div>
+  <div class="cart-grid">`;
+  for(let i=0;i<N;i++){
+    const pt=pts[i]||{x:0,y:0};
+    const m=KS.calcSectionMetrics(sd,p.diam);
+    const dist=m.fit?Math.sqrt((pt.x-m.cx)**2+(pt.y-m.cy)**2):0;
+    const dev=m.fit?dist-m.r:0;
+    const dc=m.fit?(Math.abs(dev)>m.r*0.01?(dev>0?'dev-pos':'dev-neg'):'dev-ok'):'';
+    html+=`<div class="cart-col">
+      <div class="col-hdr">Punto ${i+1}</div>
+      <div>
+        <div class="pt-lbl">X (mm)</div>
+        <input class="ptin ${dc}" type="number" step="0.01" value="${pt.x}" onchange="updCart(${i},'x',this.value)" placeholder="X">
+      </div>
+      <div>
+        <div class="pt-lbl">Y (mm)</div>
+        <input class="ptin ${dc}" type="number" step="0.01" value="${pt.y}" onchange="updCart(${i},'y',this.value)" placeholder="Y">
+      </div>
+      ${m.fit?`<div class="pt-lbl" style="color:${Math.abs(dev)>1?'var(--yellow)':'var(--green)'}">Res: ${dev>0?'+':''}${dev.toFixed(3)}</div>`:''}
+    </div>`;
+  }
+  html+=`</div>`;
+  mc.innerHTML=html;
+}
+
+function updCart(idx,field,val){
+  const p=curP;if(!p)return;
+  if(!p.sections_data) p.sections_data={};
+  if(!p.sections_data[curS]) p.sections_data[curS]={points:[],inputMode:'cartesian'};
+  while(p.sections_data[curS].points.length<=idx) p.sections_data[curS].points.push({x:0,y:0});
+  p.sections_data[curS].points[idx][field]=parseFloat(val)||0;
+  markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
+  KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);
+}
+
+// ── POLAR GRID ──
+function renderPolarGrid(pts,sd,p,mc){
+  const dnom=p.diam/2;
+  let h=`<div class="polar-grid">
+    <div class="polar-row polar-hdr"><span>#</span><span>Ángulo °</span><span>Radio mm</span><span>Dev.</span><span>Dev %</span><span></span></div>`;
+  pts.forEach((pt,i)=>{
+    const dev=pt.r-dnom, col=Math.abs(dev)>20?'var(--red)':Math.abs(dev)>10?'var(--yellow)':'var(--green)';
+    h+=`<div class="polar-row">
+      <span class="ix">${i+1}</span>
+      <input class="inp" type="number" value="${pt.a}" min="0" max="359" step="1" onchange="updPolar(${i},'a',this.value)">
+      <input class="inp" type="number" value="${pt.r}" step="0.01" onchange="updPolar(${i},'r',this.value)">
+      <span class="dv" style="color:${col}">${dev>0?'+':''}${dev.toFixed(1)}</span>
+      <span class="dv" style="color:${col}">${dev>0?'+':''}${(dev/dnom*100).toFixed(2)}%</span>
+      <button class="dbtn" onclick="delPolar(${i})">×</button>
+    </div>`;
+  });
+  h+=`<div style="display:flex;gap:7px;margin-top:8px">
+    <button class="bsm" style="font-size:11px" onclick="addPolar()">+ Punto</button>
+    <button class="bsm" style="font-size:11px" onclick="autoFill()">⚡ Distribuir</button>
+  </div></div>`;
+  mc.innerHTML=h;
+}
+
+function updPolar(i,f,v){
+  const p=curP;if(!p||!p.sections_data?.[curS]) return;
+  p.sections_data[curS].points[i][f]=parseFloat(v)||0;
+  markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
+  KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);
+}
+function delPolar(i){const p=curP;if(!p)return;p.sections_data[curS].points.splice(i,1);markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();}
+function addPolar(){
+  const p=curP;if(!p)return;
+  if(!p.sections_data[curS]) p.sections_data[curS]={points:[],inputMode:'polar'};
+  const pts=p.sections_data[curS].points;
+  const last=pts.length>0?pts[pts.length-1].a:0;
+  pts.push({a:(last+Math.round(360/Math.max(pts.length+1,4)))%360,r:p.diam/2});
+  markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
+}
+function autoFill(){
+  const n=parseInt(prompt('¿Cuántos puntos equidistantes?','8'));if(!n||n<2)return;
+  const p=curP;if(!p)return;
+  p.sections_data[curS].points=Array.from({length:n},(_,i)=>({a:Math.round(i*360/n),r:p.diam/2+(Math.random()-.5)*20}));
+  markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
+}
+
+// ── DRAW SECTION CHART ──
+function drawSecChart(){
+  const p=curP;if(!p)return;
+  const sd=p.sections_data?.[curS]||{points:[],inputMode:'cartesian'};
+  const canvas=document.getElementById('sec-chart');
+  if(!canvas)return;
+  canvas.height=370;
+  KS.drawSectionChart(canvas,sd,p.diam,p.tolerance||0.5,sd.name||`Sección ${curS+1}`);
+}
+
+// ── CSV IMPORT ──
+function handleCSV(evt){
+  const file=evt.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const lines=e.target.result.trim().split('\n');
+    const pts=[];
+    const mode=curP?.sections_data?.[curS]?.inputMode||'cartesian';
+    lines.forEach(line=>{
+      const[a,b]=line.split(',').map(v=>parseFloat(v.trim()));
+      if(!isNaN(a)&&!isNaN(b)){
+        if(mode==='cartesian') pts.push({x:a,y:b});
+        else pts.push({a,r:b});
+      }
+    });
+    if(!pts.length){alert('Sin datos válidos');return;}
+    const p=curP;if(!p)return;
+    if(!p.sections_data) p.sections_data={};
+    if(!p.sections_data[curS]) p.sections_data[curS]={inputMode:mode,points:[]};
+    p.sections_data[curS].points=pts;
+    markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
+    KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);
+    showToast(`✓ ${pts.length} puntos importados`,'ok');
+  };
+  reader.readAsText(file);evt.target.value='';
+}
+
+// ── SAVE ──
+function markUnsaved(){unsaved=true;document.getElementById('udot').classList.add('show');document.getElementById('save-status').textContent='Cambios sin guardar…';renderHornoList();}
+async function saveSection(){
+  if(!curP)return;
+  if(!db){showToast('Guardado localmente (demo)','ok');markSaved();return;}
+  try{
+    const{id,...data}=curP;
+    await db.collection('projects').doc(id).set(data);
+    markSaved();showToast('✓ Guardado y sincronizado','ok');
+  }catch(e){showToast('Error al guardar: '+e.message,'err');}
+}
+function markSaved(){unsaved=false;document.getElementById('udot').classList.remove('show');document.getElementById('save-status').textContent='Guardado — '+new Date().toLocaleTimeString('es');}
+
+// ── EXPORT CSV ──
+function exportCSV(){
+  const p=curP;if(!p)return;
+  let csv=`REPORTE KILNSCAN PRO\nProyecto:,${p.name}\nCódigo:,${p.code}\nDiámetro nominal:,${p.diam} mm\nFecha:,${new Date().toLocaleDateString('es')}\n\n`;
+  csv+=`Sección,Nombre,Modo,Puntos,Ovalidad %,Radio ajustado mm,Centro X mm,Centro Y mm,RMSE mm,Estado\n`;
+  for(let i=0;i<p.sections;i++){
+    const sd=p.sections_data?.[i]||{points:[],name:`S${i+1}`,inputMode:'cartesian'};
+    const m=KS.calcSectionMetrics(sd,p.diam);
+    const tol=p.tolerance||0.5;
+    const st=m.ovalityPct>tol*2?'CRÍTICO':m.ovalityPct>tol?'ATENCIÓN':'OK';
+    csv+=`${i+1},"${sd.name}",${sd.inputMode||'cartesian'},${(sd.points||[]).length},${m.ovalityPct.toFixed(5)},${m.r.toFixed(4)},${m.cx.toFixed(4)},${m.cy.toFixed(4)},${m.rmse.toFixed(5)},${st}\n`;
+  }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`KilnScan_${p.code}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function showToast(msg,t='info'){const el=document.getElementById('toast');el.textContent=msg;el.className=`toast ${t} show`;setTimeout(()=>el.classList.remove('show'),3200);}
+window.addEventListener('resize',()=>{if(curP){KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curS,210,switchSec);drawSecChart();}});
+</script>
+</body>
+</html>
