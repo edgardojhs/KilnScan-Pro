@@ -15,179 +15,182 @@
   --bg:#07090c;--s1:#0c0f14;--s2:#111520;--s3:#171d2c;--s4:#1e2638;
   --b1:#1a2236;--b2:#253048;--b3:#2f3d5a;
   --cyan:#00d4ff;--cyan2:rgba(0,212,255,.08);--cyan3:rgba(0,212,255,.2);
-  --green:#39e07a;--green2:rgba(57,224,122,.08);
+  --green:#22dd6a;--green2:rgba(34,221,106,.08);
   --yellow:#f5c518;--yellow2:rgba(245,197,24,.08);
-  --red:#ff4d4d;--red2:rgba(255,77,77,.08);
+  --red:#ff4444;--red2:rgba(255,68,68,.08);
+  --orange:#ff9a30;--orange2:rgba(255,154,48,.1);
   --t1:#d8e4f2;--t2:#5e7090;--t3:#293548;--t4:#131d2e;
   --mono:'DM Mono',monospace;--sans:'Barlow',sans-serif;--cond:'Barlow Condensed',sans-serif;
   --r:8px;--r2:14px;--r3:20px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100vh;}
+html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t1);}
 
-/* ── LOGIN ── */
-#login-screen{
-  position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;
-  background-image:radial-gradient(ellipse 50% 50% at 15% 50%,rgba(0,212,255,.03),transparent),radial-gradient(ellipse 50% 40% at 85% 50%,rgba(57,224,122,.025),transparent);
-}
-.lwrap{display:flex;max-width:800px;width:94vw;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);overflow:hidden;}
-.lleft{flex:1;padding:44px 36px;background:linear-gradient(140deg,var(--s2),var(--s3));border-right:1px solid var(--b1);display:flex;flex-direction:column;justify-content:center;}
-.lright{width:330px;padding:36px;display:flex;flex-direction:column;justify-content:center;}
-.lbrand{display:flex;align-items:center;gap:11px;margin-bottom:28px;}
-.lbrand-i{width:40px;height:40px;background:var(--cyan);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;}
-.lbrand-n{font-family:var(--cond);font-size:20px;font-weight:800;letter-spacing:.4px;}
-.lbrand-s{font-size:10px;color:var(--t2);margin-top:1px;}
-.lhead{font-family:var(--cond);font-size:30px;font-weight:800;line-height:1.1;letter-spacing:.5px;margin-bottom:14px;}
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;}
+.lwrap{display:flex;max-width:800px;width:94vw;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);overflow:hidden;max-height:96vh;}
+.lleft{flex:1;padding:36px 30px;background:linear-gradient(140deg,var(--s2),var(--s3));border-right:1px solid var(--b1);display:flex;flex-direction:column;justify-content:center;overflow-y:auto;}
+.lright{width:315px;padding:30px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;}
+.lbrand{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+.lbrand-i{width:36px;height:36px;background:var(--cyan);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.lbrand-n{font-family:var(--cond);font-size:18px;font-weight:800;letter-spacing:.4px;}
+.lhead{font-family:var(--cond);font-size:26px;font-weight:800;line-height:1.1;margin-bottom:12px;}
 .lhead span{color:var(--cyan);}
-.ldesc{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:20px;}
-.lfeat{display:flex;flex-direction:column;gap:9px;}
-.lfi{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--t2);}
-.lfd{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex-shrink:0;}
-.ltitle{font-family:var(--cond);font-size:19px;font-weight:800;letter-spacing:.3px;margin-bottom:3px;}
-.lsub{font-size:12px;color:var(--t2);margin-bottom:20px;}
-.fg{margin-bottom:12px;}
-.fl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;display:block;}
-.fi{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:9px 12px;font-size:13px;font-family:var(--sans);color:var(--t1);transition:border-color .15s;}
+.ldesc{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:16px;}
+.lfeat{display:flex;flex-direction:column;gap:7px;}
+.lfi{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:var(--t2);}
+.lfd{width:4px;height:4px;border-radius:50%;background:var(--cyan);flex-shrink:0;margin-top:4px;}
+.ltitle{font-family:var(--cond);font-size:17px;font-weight:800;margin-bottom:3px;}
+.lsub{font-size:12px;color:var(--t2);margin-bottom:18px;}
+.fg{margin-bottom:11px;}
+.fl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;display:block;}
+.fi{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:8px 11px;font-size:13px;font-family:var(--sans);color:var(--t1);transition:border-color .15s;}
 .fi:focus{outline:none;border-color:var(--cyan);}
 .fi::placeholder{color:var(--t3);}
-.btnl{width:100%;padding:11px;background:var(--cyan);border:none;border-radius:var(--r);color:#000;font-size:13px;font-weight:700;font-family:var(--cond);cursor:pointer;letter-spacing:.6px;transition:all .15s;margin-top:4px;}
+.btnl{width:100%;padding:10px;background:var(--cyan);border:none;border-radius:var(--r);color:#000;font-size:13px;font-weight:700;font-family:var(--cond);cursor:pointer;letter-spacing:.5px;transition:all .15s;margin-top:4px;}
 .btnl:hover{opacity:.9;}
-.lerr{font-size:11px;color:var(--red);margin-top:8px;min-height:16px;}
-.susp{background:var(--red2);border:1px solid rgba(255,77,77,.18);border-radius:var(--r);padding:12px;font-size:12px;color:var(--red);display:none;margin-top:14px;line-height:1.5;}
-@media(max-width:580px){.lleft{display:none;}.lright{width:100%;padding:28px 20px;}}
+.lerr{font-size:11px;color:var(--red);margin-top:7px;min-height:16px;}
+.susp{background:var(--red2);border:1px solid rgba(255,68,68,.18);border-radius:var(--r);padding:11px;font-size:12px;color:var(--red);display:none;margin-top:12px;}
+@media(max-width:560px){.lleft{display:none;}.lright{width:100%;}}
 
-/* ── APP ── */
-#app{display:none;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 22px;height:54px;border-bottom:1px solid var(--b1);background:var(--s1);position:sticky;top:0;z-index:100;}
-.logo{display:flex;align-items:center;gap:9px;}
-.logo-i{width:30px;height:30px;background:var(--cyan);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;}
-.logo-t{font-family:var(--cond);font-size:16px;font-weight:700;letter-spacing:.4px;}
-.logo-b{font-size:10px;font-weight:700;background:var(--cyan2);color:var(--cyan);border:1px solid var(--cyan3);padding:2px 8px;border-radius:20px;letter-spacing:.4px;}
-.tbr{display:flex;align-items:center;gap:10px;}
-.live-p{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);background:var(--green2);border:1px solid rgba(57,224,122,.18);padding:3px 10px;border-radius:20px;}
+/* APP */
+#app{display:none;height:100%;display:flex;flex-direction:column;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;border-bottom:1px solid var(--b1);background:var(--s1);flex-shrink:0;}
+.logo{display:flex;align-items:center;gap:8px;}
+.logo-i{width:28px;height:28px;background:var(--cyan);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.logo-t{font-family:var(--cond);font-size:15px;font-weight:700;letter-spacing:.3px;}
+.logo-b{font-size:9px;font-weight:700;background:var(--cyan2);color:var(--cyan);border:1px solid var(--cyan3);padding:2px 7px;border-radius:20px;}
+.tbr{display:flex;align-items:center;gap:8px;}
+.live-p{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green);background:var(--green2);border:1px solid rgba(34,221,106,.18);padding:3px 9px;border-radius:20px;}
 .ldot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.bsm{padding:6px 13px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--cond);transition:all .15s;border:1px solid var(--b2);background:var(--s2);color:var(--t1);letter-spacing:.2px;}
+.bsm{padding:5px 11px;border-radius:var(--r);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--cond);transition:all .15s;border:1px solid var(--b2);background:var(--s2);color:var(--t1);letter-spacing:.2px;}
 .bsm:hover{background:var(--s3);}
 .bcyan{background:var(--cyan);border-color:var(--cyan);color:#000;}
 .bcyan:hover{opacity:.9;}
+.borange{background:var(--orange2);border-color:rgba(255,154,48,.3);color:var(--orange);}
 
-/* ── SHELL ── */
-.shell{display:flex;height:calc(100vh - 54px);}
-.hsidebar{width:220px;min-width:220px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;}
-.hsh{padding:14px;border-bottom:1px solid var(--b1);}
-.hsh-lbl{font-size:9px;font-weight:700;color:var(--t4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
-.ccard{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:11px;}
-.ccn{font-family:var(--cond);font-size:13px;font-weight:700;margin-bottom:2px;}
-.ccm{font-size:10px;color:var(--t2);}
-.hl{flex:1;overflow-y:auto;padding:7px;}
-.hi{padding:10px 11px;border-radius:var(--r);cursor:pointer;border:1px solid transparent;margin-bottom:3px;transition:all .15s;}
+/* SHELL */
+.shell{display:flex;flex:1;min-height:0;overflow:hidden;}
+.hsidebar{width:210px;min-width:210px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
+.hsh{padding:11px;border-bottom:1px solid var(--b1);flex-shrink:0;}
+.hsh-lbl{font-size:9px;font-weight:700;color:var(--t4);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.ccard{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:9px;}
+.ccn{font-family:var(--cond);font-size:12px;font-weight:700;margin-bottom:2px;}
+.ccm{font-size:9px;color:var(--t2);}
+.hl{flex:1;overflow-y:auto;padding:5px;}
+.hi{padding:8px 9px;border-radius:var(--r);cursor:pointer;border:1px solid transparent;margin-bottom:3px;transition:all .15s;}
 .hi:hover{background:var(--s3);}
 .hi.active{background:var(--cyan2);border-color:var(--cyan3);}
-.hin{font-family:var(--cond);font-size:13px;font-weight:700;margin-bottom:2px;}
+.hin{font-family:var(--cond);font-size:11px;font-weight:700;margin-bottom:2px;}
 .hic{font-size:9px;font-family:var(--mono);color:var(--t2);}
-.hiov{font-size:10px;font-weight:600;margin-top:3px;}
-.hbot{padding:10px;border-top:1px solid var(--b1);}
-.logoutbtn{display:flex;align-items:center;gap:7px;padding:8px 11px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:600;color:var(--t2);font-family:var(--sans);width:100%;transition:all .15s;}
+.hiov{font-size:9px;font-weight:600;margin-top:2px;}
+.hbot{padding:8px;border-top:1px solid var(--b1);flex-shrink:0;}
+.logoutbtn{display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;font-size:11px;font-weight:600;color:var(--t2);font-family:var(--sans);width:100%;transition:all .15s;}
 .logoutbtn:hover{background:var(--s3);color:var(--t1);}
 
-/* ── CONTENT ── */
-.content{flex:1;overflow-y:auto;background:var(--bg);}
-.ci{padding:22px;}
-.horno-hdr{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
-.htitle{font-family:var(--cond);font-size:22px;font-weight:800;letter-spacing:.5px;}
-.hsub{font-size:12px;color:var(--t2);margin-top:3px;}
-.sbadge{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--cond);letter-spacing:.4px;}
-.bok{background:var(--green2);color:var(--green);border:1px solid rgba(57,224,122,.18);}
+/* CONTENT */
+.content{flex:1;overflow-y:auto;background:var(--bg);display:flex;flex-direction:column;}
+.ci{padding:18px;}
+.horno-hdr{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:14px 18px;margin-bottom:14px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.htitle{font-family:var(--cond);font-size:20px;font-weight:800;letter-spacing:.4px;}
+.hsub{font-size:11px;color:var(--t2);margin-top:3px;line-height:1.5;}
+.sbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--cond);}
+.bok{background:var(--green2);color:var(--green);border:1px solid rgba(34,221,106,.18);}
 .bwarn{background:var(--yellow2);color:var(--yellow);border:1px solid rgba(245,197,24,.18);}
-.bcrit{background:var(--red2);color:var(--red);border:1px solid rgba(255,77,77,.18);}
+.bcrit{background:var(--red2);color:var(--red);border:1px solid rgba(255,68,68,.18);}
 
-/* ── KPI ── */
-.krow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
-.kc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:15px;position:relative;overflow:hidden;}
+/* KPI */
+.krow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.kc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:12px;position:relative;overflow:hidden;}
 .kc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
-.kc.cc::after{background:var(--cyan);}.kc.cg::after{background:var(--green);}.kc.cy::after{background:var(--yellow);}.kc.cr::after{background:var(--red);}
-.klbl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:8px;}
-.kval{font-size:24px;font-weight:700;letter-spacing:-1px;font-family:var(--mono);}
-.kval.cc{color:var(--cyan);}.kval.cg{color:var(--green);}.kval.cy{color:var(--yellow);}.kval.cr{color:var(--red);}
-.ksub{font-size:10px;color:var(--t3);margin-top:4px;}
+.kc.cc::after{background:var(--cyan);}.kc.cg::after{background:var(--green);}
+.kc.cy::after{background:var(--yellow);}.kc.cr::after{background:var(--red);}
+.klbl{font-size:9px;font-weight:600;color:var(--t3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:6px;}
+.kval{font-size:20px;font-weight:700;letter-spacing:-.8px;font-family:var(--mono);}
+.kval.cc{color:var(--cyan);}.kval.cg{color:var(--green);}
+.kval.cy{color:var(--yellow);}.kval.cr{color:var(--red);}
+.ksub{font-size:9px;color:var(--t3);margin-top:3px;}
 
-/* ── PANELS ── */
-.panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+/* PANELS */
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);overflow:hidden;}
 .pf{grid-column:1/-1;}
-.phead{padding:13px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-.ptitle{font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:.2px;}
-.pbody{padding:15px;}
+.phead{padding:11px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px;}
+.ptitle{font-family:var(--cond);font-size:13px;font-weight:700;letter-spacing:.2px;}
+.pbody{padding:13px;}
 
-/* ── SECTION STRIP ── */
-.sstrip{display:flex;gap:5px;overflow-x:auto;padding-bottom:5px;margin-bottom:14px;scrollbar-width:thin;}
-.sbtn{flex-shrink:0;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--cond);letter-spacing:.2px;border:1px solid var(--b1);background:var(--s2);color:var(--t2);transition:all .15s;}
-.sbtn:hover{background:var(--s3);color:var(--t1);}
-.sbtn.active{background:var(--cyan2);border-color:var(--cyan3);color:var(--cyan);}
-.sbtn.sg{border-left:3px solid var(--green);}.sbtn.sy{border-left:3px solid var(--yellow);}.sbtn.sr{border-left:3px solid var(--red);}
+/* TIRE STRIP */
+.tstrip{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:thin;}
+.tbtn{flex-shrink:0;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--cond);border:1px solid var(--b1);background:var(--s2);color:var(--t2);transition:all .15s;}
+.tbtn:hover{background:var(--s3);color:var(--t1);}
+.tbtn.active{background:var(--cyan2);border-color:var(--cyan3);color:var(--cyan);}
+.tbtn.sg{border-left:3px solid var(--green);}.tbtn.sy{border-left:3px solid var(--yellow);}.tbtn.sr{border-left:3px solid var(--red);}
 
-/* ── INPUT MODE TOGGLE ── */
+/* COMPONENT TABS */
+.comp-tabs{display:flex;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+.ct-btn{flex:1;padding:7px 6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--cond);border:none;background:none;color:var(--t2);transition:all .15s;text-align:center;}
+.ct-btn:hover{color:var(--t1);}
+.ct-btn.active{background:var(--orange);color:#000;}
+.ct-btn.active.virola{background:var(--cyan);color:#000;}
+.ct-btn.active.rod{background:var(--orange);color:#000;}
+
+/* CONTROLS */
+.ctrl-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
 .mode-tog{display:flex;background:var(--s2);border:1px solid var(--b1);border-radius:6px;overflow:hidden;}
-.mt-btn{padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--cond);letter-spacing:.2px;border:none;background:none;color:var(--t2);transition:all .15s;}
+.mt-btn{padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--cond);border:none;background:none;color:var(--t2);transition:all .15s;}
 .mt-btn.active{background:var(--cyan);color:#000;}
+.usel{background:var(--s2);border:1px solid var(--b1);border-radius:6px;padding:5px 9px;font-size:11px;font-family:var(--cond);color:var(--t1);cursor:pointer;-webkit-appearance:none;}
+.usel:focus{outline:none;border-color:var(--cyan);}
+.rd-tog{display:flex;background:var(--s2);border:1px solid var(--b1);border-radius:6px;overflow:hidden;}
+.rd-btn{padding:5px 9px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--cond);border:none;background:none;color:var(--t2);transition:all .15s;}
+.rd-btn.active{background:var(--orange);color:#000;}
 
-/* ── MEAS GRID CARTESIAN ── */
-.cart-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:10px;}
-.cart-col{display:flex;flex-direction:column;gap:5px;}
-.col-hdr{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;padding:5px 8px;background:var(--s3);border-radius:5px;text-align:center;}
-.ptin{background:var(--s2);border:1px solid var(--b1);border-radius:5px;padding:7px 8px;font-size:12px;font-family:var(--mono);color:var(--t1);width:100%;transition:border-color .15s;text-align:center;}
+/* STATION TABLE */
+.meas-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.meas-tbl th{font-size:9px;font-weight:700;color:var(--t4);letter-spacing:.5px;text-transform:uppercase;padding:5px 6px;background:var(--s3);text-align:center;border-bottom:1px solid var(--b1);}
+.meas-tbl td{padding:4px 4px;}
+.meas-tbl tr:nth-child(even) td{background:rgba(255,255,255,.01);}
+.ptin{background:var(--s2);border:1px solid var(--b1);border-radius:5px;padding:6px 7px;font-size:12px;font-family:var(--mono);color:var(--t1);width:100%;text-align:center;transition:border-color .15s;}
 .ptin:focus{outline:none;border-color:var(--cyan);}
-.ptin.dev-pos{border-color:rgba(255,77,77,.4);color:var(--red);}
-.ptin.dev-neg{border-color:rgba(96,165,250,.4);color:var(--blue,#60a5fa);}
-.ptin.dev-ok{border-color:rgba(57,224,122,.3);color:var(--green);}
-.pt-lbl{font-size:9px;color:var(--t3);text-align:center;margin-top:1px;}
+.res-cell{font-family:var(--mono);font-size:10px;text-align:center;}
+.del-btn{background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px;padding:2px 5px;transition:color .1s;}
+.del-btn:hover{color:var(--red);}
 
-/* ── MEAS GRID POLAR ── */
-.polar-grid{display:flex;flex-direction:column;gap:6px;}
-.polar-row{display:grid;grid-template-columns:40px 1fr 1fr 70px 70px 26px;gap:6px;align-items:center;}
-.polar-hdr{font-size:10px;font-weight:700;color:var(--t4);letter-spacing:.5px;text-transform:uppercase;padding-bottom:5px;border-bottom:1px solid var(--b1);}
-.inp{background:var(--s2);border:1px solid var(--b1);border-radius:5px;padding:7px 9px;font-size:12px;font-family:var(--mono);color:var(--t1);width:100%;transition:border-color .15s;}
-.inp:focus{outline:none;border-color:var(--cyan);}
-.dv{font-family:var(--mono);font-size:11px;text-align:right;font-weight:500;}
-.ix{font-family:var(--mono);font-size:10px;color:var(--t3);text-align:center;}
-.dbtn{background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:2px;transition:color .1s;}
-.dbtn:hover{color:var(--red);}
+/* REG BOX */
+.reg-box{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:10px;margin-top:8px;}
+.reg-title{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:7px;}
+.reg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.ri{text-align:center;background:var(--s1);border-radius:5px;padding:6px 3px;}
+.rl{font-size:9px;font-weight:700;color:var(--t4);letter-spacing:.3px;text-transform:uppercase;margin-bottom:2px;}
+.rv{font-size:12px;font-weight:700;font-family:var(--mono);color:var(--cyan);}
 
-/* ── REGRESSION RESULTS ── */
-.reg-box{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px;margin-top:10px;}
-.reg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
-.reg-item{text-align:center;}
-.reg-lbl{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px;}
-.reg-val{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--cyan);}
-
-/* ── CSV ZONE ── */
-.csvz{border:1px dashed var(--b2);border-radius:var(--r);padding:11px 13px;text-align:center;color:var(--t2);font-size:11px;cursor:pointer;transition:all .15s;margin-bottom:12px;}
+/* CSV */
+.csvz{border:1px dashed var(--b2);border-radius:var(--r);padding:9px;text-align:center;color:var(--t2);font-size:11px;cursor:pointer;transition:all .15s;margin-bottom:10px;}
 .csvz:hover{background:var(--s2);border-color:var(--cyan);color:var(--t1);}
 
-/* ── SAVE BAR ── */
-.savebar{position:sticky;bottom:0;background:var(--s1);border-top:1px solid var(--b1);padding:11px 22px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--t2);}
-.udot{width:6px;height:6px;border-radius:50%;background:var(--yellow);display:none;flex-shrink:0;}
+/* SAVE BAR */
+.savebar{background:var(--s1);border-top:1px solid var(--b1);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--t2);flex-shrink:0;}
+.udot{width:6px;height:6px;border-radius:50%;background:var(--yellow);display:none;}
 .udot.show{display:inline-block;animation:blink .8s infinite;}
 
-/* ── LOADING / EMPTY ── */
-.loading{display:flex;align-items:center;justify-content:center;height:50vh;flex-direction:column;gap:14px;color:var(--t2);}
-.sp{width:30px;height:30px;border:2px solid var(--b1);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;}
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:14px;color:var(--t2);}
+.sp{width:28px;height:28px;border:2px solid var(--b1);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ── HM LEGEND ── */
-.hml{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--t3);margin-top:6px;}
-.hmb{flex:1;height:5px;border-radius:3px;background:linear-gradient(to right,#39e07a,#f5c518,#ff4d4d);}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:70px;right:22px;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:10px 16px;font-size:12px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.5);transform:translateY(70px);opacity:0;transition:all .28s;z-index:500;}
+/* TOAST */
+.toast{position:fixed;bottom:65px;right:20px;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:10px 14px;font-size:12px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.5);transform:translateY(70px);opacity:0;transition:all .28s;z-index:500;}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.ok{border-left:3px solid var(--green);}.toast.info{border-left:3px solid var(--cyan);}.toast.err{border-left:3px solid var(--red);}
 
+.hml{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--t3);margin-top:5px;}
+.hmb{flex:1;height:4px;border-radius:3px;background:linear-gradient(to right,#22dd6a,#f5c518,#ff4444);}
+
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px;}
-@media(max-width:860px){.krow{grid-template-columns:repeat(2,1fr);}.panels{grid-template-columns:1fr;}.hsidebar{width:190px;min-width:190px;}}
-@media(max-width:580px){.hsidebar{display:none;}}
+@media(max-width:860px){.krow{grid-template-columns:repeat(2,1fr);}.panels{grid-template-columns:1fr;}.hsidebar{width:180px;min-width:180px;}}
+@media(max-width:540px){.hsidebar{display:none;}}
 </style>
 </head>
 <body>
@@ -198,27 +201,28 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100
     <div class="lleft">
       <div class="lbrand">
         <div class="lbrand-i">🏭</div>
-        <div><div class="lbrand-n" id="l-empresa">KILNSCAN PRO</div><div class="lbrand-s">Portal de Fábrica</div></div>
+        <div><div class="lbrand-n" id="l-empresa">KILNSCAN PRO</div><div style="font-size:10px;color:var(--t2)">Portal de Fábrica</div></div>
       </div>
       <div class="lhead">Análisis de<br><span>excentricidad</span><br>y ovalidad</div>
-      <div class="ldesc">Monitoreo dimensional en tiempo real para hornos cementeros. Ingresa coordenadas cartesianas X,Y y obtén el diámetro óptimo por regresión circular.</div>
+      <div class="ldesc">Medición dimensional de hornos cementeros con estación total. Virola + 2 rodillos por llanta. Regresión circular Taubin de alta precisión.</div>
       <div class="lfeat">
-        <div class="lfi"><span class="lfd"></span>Regresión circular por mínimos cuadrados (Kasa)</div>
-        <div class="lfi"><span class="lfd"></span>Vista cilíndrica inclinada con mapa de calor</div>
-        <div class="lfi"><span class="lfd"></span>Entrada cartesiana X,Y o polar ángulo/radio</div>
-        <div class="lfi"><span class="lfd"></span>Cálculo automático de ovalidad, excentricidad y RMSE</div>
-        <div class="lfi"><span class="lfd"></span>Sincronización en tiempo real con el panel maestro</div>
+        <div class="lfi"><span class="lfd"></span>3 llantas por horno (virola + 2 rodillos/galetes cada una)</div>
+        <div class="lfi"><span class="lfd"></span>Estación total: ángulo vertical + ángulo horizontal + distancia</div>
+        <div class="lfi"><span class="lfd"></span>Unidades: mm, cm o metros — conversión automática</div>
+        <div class="lfi"><span class="lfd"></span>Radio ↔ Diámetro intercambiables en todos los campos</div>
+        <div class="lfi"><span class="lfd"></span>Regresión Taubin — mayor precisión que Kasa</div>
+        <div class="lfi"><span class="lfd"></span>Vista cilíndrica con llantas y rodillos visualizados</div>
       </div>
     </div>
     <div class="lright">
       <div class="ltitle">Acceso Fábrica</div>
-      <div class="lsub">Ingresa con tus credenciales de acceso</div>
+      <div class="lsub">Ingresa con tus credenciales</div>
       <div class="fg"><label class="fl">Correo electrónico</label><input class="fi" id="le" type="email" placeholder="planta@fabrica.com"></div>
       <div class="fg"><label class="fl">Contraseña</label><input class="fi" id="lp" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <div class="fg"><label class="fl">Código de proyecto</label><input class="fi" id="lc" placeholder="Ej: ARG-N1-7X3K" style="font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
       <button class="btnl" onclick="doLogin()">INGRESAR</button>
       <div class="lerr" id="lerr"></div>
-      <div class="susp" id="susp">⚠️ Tu licencia ha vencido o ha sido suspendida. Contacta a tu proveedor de mantenimiento.</div>
+      <div class="susp" id="susp">⚠️ Licencia suspendida o vencida. Contacta a tu proveedor.</div>
     </div>
   </div>
 </div>
@@ -237,108 +241,146 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100
   </div>
 
   <div class="shell">
-    <!-- HORNO SIDEBAR -->
     <div class="hsidebar">
       <div class="hsh">
         <div class="hsh-lbl">Planta</div>
-        <div class="ccard">
-          <div class="ccn" id="cc-name">—</div>
-          <div class="ccm" id="cc-meta">—</div>
-        </div>
+        <div class="ccard"><div class="ccn" id="cc-name">—</div><div class="ccm" id="cc-meta">—</div></div>
       </div>
-      <div style="padding:10px 11px 3px;font-size:9px;font-weight:700;color:var(--t4);letter-spacing:1px;text-transform:uppercase;">Hornos</div>
+      <div style="padding:8px 9px 2px;font-size:9px;font-weight:700;color:var(--t4);letter-spacing:1px;text-transform:uppercase;">Hornos</div>
       <div class="hl" id="horno-list"></div>
-      <div class="hbot">
-        <button class="logoutbtn" onclick="doLogout()">⏻ &nbsp;Cerrar sesión</button>
-      </div>
+      <div class="hbot"><button class="logoutbtn" onclick="doLogout()">⏻ &nbsp;Cerrar sesión</button></div>
     </div>
 
-    <!-- CONTENT -->
     <div class="content">
       <div id="ct-loading" class="loading"><div class="sp"></div><span>Cargando…</span></div>
-      <div id="ct-empty" style="display:none" class="loading"><span style="color:var(--t3)">Sin hornos registrados para tu cuenta</span></div>
-      <div id="ct-horno" style="display:none">
-        <div class="ci">
+      <div id="ct-empty" style="display:none" class="loading"><span style="color:var(--t3)">Sin hornos registrados</span></div>
+      <div id="ct-horno" style="display:none;flex:1;overflow-y:auto;display:flex;flex-direction:column;">
+        <div class="ci" style="flex:1">
           <!-- Header -->
           <div class="horno-hdr">
-            <div><div class="htitle" id="h-title">—</div><div class="hsub" id="h-sub">—</div></div>
-            <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+            <div>
+              <div class="htitle" id="h-title">—</div>
+              <div class="hsub" id="h-sub">—</div>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
               <div class="sbadge" id="h-badge">—</div>
               <button class="bsm" onclick="document.getElementById('csv-inp').click()">↑ CSV</button>
-              <button class="bsm bcyan" onclick="saveSection()">💾 Guardar</button>
+              <button class="bsm bcyan" onclick="saveTire()">💾 Guardar</button>
               <input type="file" id="csv-inp" accept=".csv" style="display:none" onchange="handleCSV(event)">
             </div>
           </div>
+
           <!-- KPIs -->
           <div class="krow">
-            <div class="kc cc"><div class="klbl">Ovalidad (R. circular)</div><div class="kval cc" id="kpi-ov">—</div><div class="ksub" id="kpi-ov-s">Regresión Kasa</div></div>
-            <div class="kc cg"><div class="klbl">Radio ajustado</div><div class="kval cg" id="kpi-r">—</div><div class="ksub">mm (mejor estimado)</div></div>
-            <div class="kc cy"><div class="klbl">Centro ajustado</div><div class="kval cy" id="kpi-c">—</div><div class="ksub">X, Y respecto al origen</div></div>
-            <div class="kc cr"><div class="klbl">RMSE ajuste</div><div class="kval cr" id="kpi-rmse">—</div><div class="ksub">Error medio de regresión</div></div>
+            <div class="kc cc"><div class="klbl">Ovalidad virola (Taubin)</div><div class="kval cc" id="kpi-ov">—</div><div class="ksub" id="kpi-ov-s">—</div></div>
+            <div class="kc cg"><div class="klbl">Diámetro ajustado</div><div class="kval cg" id="kpi-d">—</div><div class="ksub" id="kpi-d-s">—</div></div>
+            <div class="kc cy"><div class="klbl">Radio ajustado</div><div class="kval cy" id="kpi-r">—</div><div class="ksub" id="kpi-r-s">—</div></div>
+            <div class="kc cr"><div class="klbl">RMSE ajuste</div><div class="kval cr" id="kpi-rmse">—</div><div class="ksub">Error medio (mm)</div></div>
           </div>
-          <!-- Section strip -->
-          <div class="sstrip" id="sec-strip"></div>
+
+          <!-- Tire strip -->
+          <div class="tstrip" id="tire-strip"></div>
+
           <!-- Panels -->
           <div class="panels">
             <!-- Cilindro 3D -->
             <div class="panel pf">
               <div class="phead">
-                <span class="ptitle">🔥 Horno — Cilindro inclinado con mapa de calor</span>
-                <span style="font-size:10px;color:var(--t2)">Haz clic en una sección</span>
+                <span class="ptitle">🔥 Horno — vista longitudinal con llantas y rodillos</span>
+                <span style="font-size:10px;color:var(--t2)">🟡 = llanta (virola) · ● = rodillos de apoyo</span>
               </div>
               <div class="pbody">
-                <canvas id="kiln-canvas" height="210"></canvas>
+                <canvas id="kiln-canvas" height="195"></canvas>
                 <div class="hml"><span>Normal</span><div class="hmb"></div><span>Crítico</span></div>
               </div>
             </div>
-            <!-- Polar chart -->
+
+            <!-- Gráfico sección -->
             <div class="panel">
               <div class="phead">
-                <span class="ptitle">📐 Sección — <span id="sec-name-lbl">—</span></span>
+                <span class="ptitle">📐 Sección transversal — <span id="sec-name-lbl">—</span></span>
               </div>
               <div class="pbody" style="display:flex;flex-direction:column;align-items:center">
-                <canvas id="sec-chart" height="370" style="max-width:390px;width:100%"></canvas>
+                <canvas id="sec-chart" height="400" style="max-width:400px;width:100%"></canvas>
               </div>
             </div>
+
             <!-- Mediciones -->
             <div class="panel">
               <div class="phead">
                 <span class="ptitle">📋 Mediciones</span>
-                <div style="display:flex;gap:6px;align-items:center">
-                  <div class="mode-tog">
-                    <button class="mt-btn active" id="mt-cart" onclick="setMode('cartesian')">X,Y Cartesiano</button>
-                    <button class="mt-btn" id="mt-polar" onclick="setMode('polar')">Ángulo / Radio</button>
-                  </div>
-                  <div class="udot" id="udot"></div>
-                </div>
+                <div class="udot" id="udot"></div>
               </div>
               <div class="pbody">
-                <div class="csvz" onclick="document.getElementById('csv-inp').click()">
-                  📂 Importar CSV — cartesiano: <code>x,y</code> · polar: <code>ángulo,radio</code>
+                <!-- Selector de componente: Virola / Rodillo Izq / Rodillo Der -->
+                <div class="comp-tabs" id="comp-tabs">
+                  <button class="ct-btn active virola" id="ct-virola" onclick="setComp('virola')">🔵 Virola</button>
+                  <button class="ct-btn rod" id="ct-rodIzq" onclick="setComp('rodIzq')">🟡 Rod. Izq.</button>
+                  <button class="ct-btn rod" id="ct-rodDer" onclick="setComp('rodDer')">🟡 Rod. Der.</button>
                 </div>
+
+                <!-- CSV hint -->
+                <div class="csvz" onclick="document.getElementById('csv-inp').click()">
+                  📂 CSV estación total: <code>aV,aH,dist</code> &nbsp;|&nbsp; cartesiano: <code>x,y</code>
+                </div>
+
+                <!-- Controls -->
+                <div class="ctrl-row">
+                  <div class="mode-tog">
+                    <button class="mt-btn active" id="mt-station" onclick="setMode('station')">Est. Total</button>
+                    <button class="mt-btn" id="mt-cart" onclick="setMode('cartesian')">X, Y</button>
+                  </div>
+                  <select class="usel" id="unit-sel" onchange="setUnit(this.value)">
+                    <option value="mm">mm</option>
+                    <option value="cm">cm</option>
+                    <option value="m">m</option>
+                  </select>
+                  <div class="rd-tog">
+                    <button class="rd-btn active" id="rdb-r" onclick="setRD('r')">Radio</button>
+                    <button class="rd-btn" id="rdb-d" onclick="setRD('d')">Diám.</button>
+                  </div>
+                </div>
+
+                <!-- Diámetro nominal del componente -->
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;background:var(--s3);border-radius:var(--r);padding:7px 10px;flex-wrap:wrap;">
+                  <span style="font-size:10px;color:var(--t2);font-weight:600;" id="nom-diam-lbl">Diám. nominal virola:</span>
+                  <input class="ptin" style="width:95px" type="number" step="0.001" id="nom-diam-inp" onchange="setNomDiam(+this.value)">
+                  <select class="usel" id="nom-unit-sel" onchange="setNomDiamUnit(this.value)" style="font-size:10px;padding:4px 7px">
+                    <option value="mm">mm</option><option value="cm">cm</option><option value="m">m</option>
+                  </select>
+                  <span style="font-size:10px;color:var(--t3)">· puntos por llanta: <strong id="pts-per-lbl">—</strong></span>
+                </div>
+
+                <!-- Tabla de mediciones -->
                 <div id="meas-container"></div>
-                <!-- Regression results box -->
+
+                <!-- Resultado regresión -->
                 <div class="reg-box" id="reg-box" style="display:none">
-                  <div style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.7px;text-transform:uppercase">Resultado de regresión circular (Kasa)</div>
+                  <div class="reg-title" id="reg-title">Regresión circular Taubin — Virola</div>
                   <div class="reg-grid">
-                    <div class="reg-item"><div class="reg-lbl">Radio ajustado</div><div class="reg-val" id="rr-r">—</div></div>
-                    <div class="reg-item"><div class="reg-lbl">Centro X</div><div class="reg-val" id="rr-cx">—</div></div>
-                    <div class="reg-item"><div class="reg-lbl">Centro Y</div><div class="reg-val" id="rr-cy">—</div></div>
-                    <div class="reg-item"><div class="reg-lbl">Ovalidad</div><div class="reg-val" id="rr-ov" style="color:var(--yellow)">—</div></div>
-                    <div class="reg-item"><div class="reg-lbl">RMSE</div><div class="reg-val" id="rr-rmse">—</div></div>
-                    <div class="reg-item"><div class="reg-lbl">Puntos</div><div class="reg-val" id="rr-n">—</div></div>
+                    <div class="ri"><div class="rl">Radio</div><div class="rv" id="rr-r">—</div></div>
+                    <div class="ri"><div class="rl">Diámetro</div><div class="rv" id="rr-d">—</div></div>
+                    <div class="ri"><div class="rl">Ovalidad</div><div class="rv" id="rr-ov" style="color:var(--yellow)">—</div></div>
+                    <div class="ri"><div class="rl">Cx</div><div class="rv" id="rr-cx">—</div></div>
+                    <div class="ri"><div class="rl">Cy</div><div class="rv" id="rr-cy">—</div></div>
+                    <div class="ri"><div class="rl">RMSE</div><div class="rv" id="rr-rmse">—</div></div>
+                    <div class="ri"><div class="rl">Excentr.</div><div class="rv" id="rr-ec">—</div></div>
+                    <div class="ri"><div class="rl">Puntos</div><div class="rv" id="rr-n">—</div></div>
+                    <div class="ri"><div class="rl">Unidad</div><div class="rv" id="rr-unit">—</div></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <!-- Save bar -->
         <div class="savebar">
-          <span id="save-status">Todos los cambios guardados</span>
-          <div style="display:flex;gap:7px">
+          <div style="display:flex;align-items:center;gap:7px">
+            <div class="udot" id="udot2"></div>
+            <span id="save-status">Todos los cambios guardados</span>
+          </div>
+          <div style="display:flex;gap:6px">
             <button class="bsm" onclick="exportCSV()">↓ Exportar CSV</button>
-            <button class="bsm bcyan" onclick="saveSection()">💾 Guardar sección</button>
+            <button class="bsm bcyan" onclick="saveTire()">💾 Guardar llanta</button>
           </div>
         </div>
       </div>
@@ -349,93 +391,88 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100
 <div class="toast" id="toast"></div>
 
 <script>
+// ── CONFIG ──
 const CFG=window.KS_CONFIG||{};
 const FB_CFG=CFG.firebase||{};
 const DEMO=!FB_CFG.apiKey||FB_CFG.apiKey.startsWith('PEGA_AQUI');
-
 let db=null,auth=null;
-let myClient=null,myProjects=[],curP=null,curS=0;
-let unsaved=false;
+let myClient=null,myProjects=[],curP=null,curTire=0,curComp='virola',rdMode='r';
 
 // ── DEMO DATA ──
 const DEMO_C={id:"c1",name:"Cementos Argos — Planta Norte",email:"argos@planta.com",plan:"quarterly",status:"active",expiresAt:"2026-12-31",projectCode:"ARG-N1-7X3K"};
-function makeDemoP(id,name,code,diam,nsec,ovs){
-  const sd={};
-  ovs.forEach((ov,i)=>{
-    const s=KS.generateDemoSection(diam,ov);
-    s.name=`S${i+1} — ${['Entrada','Zona fría','Central','Quemador','Zona caliente','Salida'][i]||'S'+(i+1)}`;
-    sd[i]=s;
-  });
-  return{id,clientId:"c1",name,code,diam,sections:nsec,length:nsec===6?75:68,tolerance:0.5,inclination:3.5,sections_data:sd};
+function mkDemoProject(id,name,code,diam,ovs){
+  const tires={};
+  ovs.forEach((ov,i)=>{tires[i]={...KS.genDemoTire(diam,ov,900),name:`Llanta ${i+1}`};});
+  return{id,clientId:"c1",name,code,diam,ntires:ovs.length,length:75,inclination:3.5,warnThreshold:0.5,critThreshold:1.0,ptsPerTire:6,tires};
 }
 const DEMO_PS=[
-  makeDemoP("p1","Horno 1","HRN-01",4200,6,[0.18,0.12,0.64,0.38,1.02,0.21]),
-  makeDemoP("p2","Horno 2","HRN-02",4000,5,[0.10,0.09,1.24,0.08,0.11])
+  mkDemoProject("p1","Horno 1","HRN-01",4200,[0.18,0.63,0.22]),
+  mkDemoProject("p2","Horno 2","HRN-02",4000,[0.09,1.18,0.11])
 ];
 
 // ── INIT ──
 window.addEventListener('DOMContentLoaded',()=>{
-  if(CFG.empresaCorto){
-    document.getElementById('l-empresa').textContent=CFG.empresaCorto;
-    document.getElementById('top-empresa').textContent=CFG.empresaCorto;
-  }
-  const params=new URLSearchParams(location.search);
-  const uc=params.get('code');
+  if(CFG.empresaCorto){document.getElementById('l-empresa').textContent=CFG.empresaCorto;document.getElementById('top-empresa').textContent=CFG.empresaCorto;}
+  const uc=new URLSearchParams(location.search).get('code');
   if(uc) document.getElementById('lc').value=uc.toUpperCase();
   if(DEMO){loadDemo();return;}
-  try{
-    firebase.initializeApp(FB_CFG);
-    auth=firebase.auth();
-    db=firebase.firestore();
-    auth.onAuthStateChanged(async u=>{
-      if(u){
-        const ud=await db.collection('users').doc(u.uid).get();
-        if(ud.exists){
-          const cd=await db.collection('clients').doc(ud.data().clientId).get();
-          if(cd.exists){myClient={id:cd.id,...cd.data()};if(myClient.status!=='active'){showSusp();return;}doEnter();}
+  try{firebase.initializeApp(FB_CFG);auth=firebase.auth();db=firebase.firestore();
+    auth.onAuthStateChanged(async u=>{if(u){
+      const ud=await db.collection('users').doc(u.uid).get();
+      if(ud.exists){const cd=await db.collection('clients').doc(ud.data().clientId).get();
+        if(cd.exists){myClient={id:cd.id,...cd.data()};
+          if(myClient.status!=='active'){showSusp();return;}
+          doEnter();
         }
       }
-    });
+    }});
   }catch(e){console.warn(e);}
 });
 
-function loadDemo(){myClient={...DEMO_C};myProjects=JSON.parse(JSON.stringify(DEMO_PS));document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('livetxt').textContent='Modo demo';afterLoad();}
+function loadDemo(){myClient={...DEMO_C};myProjects=JSON.parse(JSON.stringify(DEMO_PS));
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('livetxt').textContent='Modo demo';
+  afterLoad();}
+function showSusp(){document.getElementById('susp').style.display='block';}
 
 async function doLogin(){
   const e=document.getElementById('le').value.trim().toLowerCase();
   const p=document.getElementById('lp').value;
   const c=document.getElementById('lc').value.trim().toUpperCase();
-  const err=document.getElementById('lerr');
-  err.textContent='';document.getElementById('susp').style.display='none';
+  document.getElementById('lerr').textContent='';document.getElementById('susp').style.display='none';
   if(DEMO){loadDemo();return;}
   try{
     const cr=await auth.signInWithEmailAndPassword(e,p);
     const ud=await db.collection('users').doc(cr.user.uid).get();
-    if(!ud.exists){auth.signOut();err.textContent='Usuario no encontrado';return;}
+    if(!ud.exists){auth.signOut();document.getElementById('lerr').textContent='Usuario no encontrado';return;}
     const cd=await db.collection('clients').doc(ud.data().clientId).get();
-    if(!cd.exists){auth.signOut();err.textContent='Cliente no encontrado';return;}
+    if(!cd.exists){auth.signOut();document.getElementById('lerr').textContent='Cliente no encontrado';return;}
     myClient={id:cd.id,...cd.data()};
-    if(c&&myClient.projectCode&&myClient.projectCode!==c){auth.signOut();err.textContent='Código de proyecto incorrecto';return;}
+    if(c&&myClient.projectCode&&myClient.projectCode!==c){auth.signOut();document.getElementById('lerr').textContent='Código incorrecto';return;}
     if(myClient.status!=='active'){auth.signOut();showSusp();return;}
     doEnter();
-  }catch(e2){err.textContent='Credenciales incorrectas';}
+  }catch(e2){document.getElementById('lerr').textContent='Credenciales incorrectas';}
 }
-function showSusp(){document.getElementById('susp').style.display='block';}
-function doLogout(){if(!DEMO)auth?.signOut();myClient=null;myProjects=[];curP=null;document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';}
-function doEnter(){document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';if(db)subscribeProjects(myClient.id);}
+function doLogout(){if(!DEMO)auth?.signOut();myClient=null;myProjects=[];curP=null;
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';}
+function doEnter(){document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  if(db)subscribeProjects(myClient.id);}
 
 function subscribeProjects(cid){
   db.collection('projects').where('clientId','==',cid).onSnapshot(snap=>{
     myProjects=[];snap.forEach(d=>myProjects.push({id:d.id,...d.data()}));
     document.getElementById('livetxt').textContent='En vivo ✓';
     afterLoad();
-    if(curP){const upd=myProjects.find(p=>p.id===curP.id);if(upd){curP=upd;refreshView();}}
+    if(curP){const up=myProjects.find(p=>p.id===curP.id);if(up){curP=up;refreshView();}}
   });
 }
 
 function afterLoad(){
   document.getElementById('cc-name').textContent=myClient?.name||'—';
-  document.getElementById('client-badge').textContent=(myClient?.name||'Fábrica').split('—')[0].trim().slice(0,12);
+  document.getElementById('client-badge').textContent=(myClient?.name||'Fábrica').split('—')[0].trim().slice(0,14);
   document.getElementById('cc-meta').textContent=`${myProjects.length} horno${myProjects.length!==1?'s':''} registrado${myProjects.length!==1?'s':''}`;
   renderHornoList();
   document.getElementById('ct-loading').style.display='none';
@@ -445,258 +482,374 @@ function afterLoad(){
 
 function renderHornoList(){
   const list=document.getElementById('horno-list');
-  if(!myProjects.length){list.innerHTML='<div style="padding:10px;font-size:11px;color:var(--t3)">Sin hornos</div>';return;}
+  if(!myProjects.length){list.innerHTML='<div style="padding:9px;font-size:10px;color:var(--t3)">Sin hornos</div>';return;}
   list.innerHTML=myProjects.map(p=>{
-    const tol=p.tolerance||0.5;
-    const ov=KS.maxOvalityProject(p);
-    const col=KS.ovColor(ov,tol);
-    const st=ov>tol*2?'sr':ov>tol?'sy':'sg';
+    const ov=KS.maxOvalityProject(p),col=KS.ovColor(ov,p);
+    const st=KS.projectStatusLevel(p);
+    const sc=st==='crit'?'sr':st==='warn'?'sy':'sg';
     return `<div class="hi ${curP?.id===p.id?'active':''}" onclick="selectProject('${p.id}')">
       <div class="hin">${p.name}</div>
       <div class="hic">${p.code} · ⌀${p.diam}mm</div>
-      <div class="hiov ${st}" style="color:${col}">${ov.toFixed(2)}% ovalidad</div>
+      <div class="hiov ${sc}" style="color:${col}">${ov.toFixed(3)}%</div>
     </div>`;
   }).join('');
 }
 
-function selectProject(id){curP=myProjects.find(p=>p.id===id)||null;curS=0;if(!curP)return;renderHornoList();document.getElementById('ct-horno').style.display='block';document.getElementById('ct-empty').style.display='none';refreshView();}
+function selectProject(id){
+  curP=myProjects.find(p=>p.id===id)||null;
+  curTire=0;curComp='virola';rdMode='r';
+  if(!curP)return;
+  renderHornoList();
+  document.getElementById('ct-horno').style.display='flex';
+  document.getElementById('ct-empty').style.display='none';
+  refreshView();
+}
 
-// ── VIEW REFRESH ──
+// ── REFRESH ──
 function refreshView(){
   const p=curP;if(!p)return;
-  const tol=p.tolerance||0.5;
   const ov=KS.maxOvalityProject(p);
-  const bc=ov>tol*2?'bcrit':ov>tol?'bwarn':'bok';
-  const bl=ov>tol*2?'⚠ CRÍTICO':ov>tol?'▲ ATENCIÓN':'✓ NORMAL';
+  const st=KS.projectStatusLevel(p);
+  const bc=st==='crit'?'bcrit':st==='warn'?'bwarn':'bok';
+  const bl=st==='crit'?'⚠ CRÍTICO':st==='warn'?'▲ ATENCIÓN':'✓ NORMAL';
   document.getElementById('h-title').textContent=`${p.name} — ${p.code}`;
-  document.getElementById('h-sub').textContent=`⌀ ${p.diam}mm nominal · ${p.sections} secciones · ${p.length}m · Inclinación ${p.inclination||3.5}° · Tolerancia ±${tol}%`;
+  document.getElementById('h-sub').textContent=`⌀ ${p.diam}mm · ${p.ntires||3} llantas · ${p.length}m · Inclinación ${p.inclination||3.5}° · ${p.ptsPerTire||6} pts/llanta`;
   document.getElementById('h-badge').textContent=bl;
   document.getElementById('h-badge').className='sbadge '+bc;
-  updateKPIs(); renderSecStrip(); renderMeasContainer(); renderModeToggle();
-  setTimeout(()=>{KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);drawSecChart();},60);
+  updateKPIs();renderTireStrip();renderCompTabs();renderMeasContainer();renderModeToggles();
+  setTimeout(()=>{
+    KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curTire,195,switchTire);
+    drawChart();
+  },50);
 }
 
-// ── KPIs ──
 function updateKPIs(){
   const p=curP;if(!p)return;
-  const sd=p.sections_data?.[curS]||{points:[]};
-  const m=KS.calcSectionMetrics(sd,p.diam);
-  const tol=p.tolerance||0.5;
-  const col=m.ovalityPct>tol*2?'cr':m.ovalityPct>tol?'cy':'cg';
-  setKPI('kpi-ov',m.ovalityPct.toFixed(3)+'%',col);
-  setKPI('kpi-r',m.r.toFixed(3)+' mm','cg');
-  setKPI('kpi-c',`(${m.cx.toFixed(2)}, ${m.cy.toFixed(2)})`,'cy');
-  setKPI('kpi-rmse',m.rmse.toFixed(4)+' mm','cr');
-  // Regression box
-  if(m.fit){
+  const tire=getTire();
+  const mV=KS.calcMetrics(tire.virola||{});
+  const unit=tire.virola?.unit||'mm';
+  const tol=p.warnThreshold||0.5;
+  const col=mV.ovalityPct>p.critThreshold?'cr':mV.ovalityPct>tol?'cy':'cg';
+  sk('kpi-ov',mV.ovalityPct.toFixed(5)+'%',col);
+  document.getElementById('kpi-ov-s').textContent=`warn>${tol}% crit>${p.critThreshold||1}%`;
+  sk('kpi-d',KS.fromMM(mV.diameter,unit).toFixed(4)+' '+unit,'cg');
+  document.getElementById('kpi-d-s').textContent=`Diám. en ${unit}`;
+  sk('kpi-r',KS.fromMM(mV.r,unit).toFixed(4)+' '+unit,'cy');
+  document.getElementById('kpi-r-s').textContent=`Radio en ${unit}`;
+  sk('kpi-rmse',mV.rmse.toFixed(4)+' mm','cr');
+  // reg box
+  const comp=getComp();
+  const mC=KS.calcMetrics(comp);
+  if(mC.fit){
+    const cu=comp.unit||'mm';
     document.getElementById('reg-box').style.display='block';
-    document.getElementById('rr-r').textContent=m.r.toFixed(4)+' mm';
-    document.getElementById('rr-cx').textContent=m.cx.toFixed(4)+' mm';
-    document.getElementById('rr-cy').textContent=m.cy.toFixed(4)+' mm';
-    document.getElementById('rr-ov').textContent=m.ovalityPct.toFixed(4)+'%';
-    document.getElementById('rr-rmse').textContent=m.rmse.toFixed(5)+' mm';
-    document.getElementById('rr-n').textContent=m.fit.n;
+    document.getElementById('reg-title').textContent=`Regresión Taubin — ${compLabel()}`;
+    document.getElementById('rr-r').textContent=KS.fromMM(mC.r,cu).toFixed(5)+' '+cu;
+    document.getElementById('rr-d').textContent=KS.fromMM(mC.diameter,cu).toFixed(5)+' '+cu;
+    document.getElementById('rr-ov').textContent=mC.ovalityPct.toFixed(5)+'%';
+    document.getElementById('rr-cx').textContent=KS.fromMM(mC.cx,cu).toFixed(5)+' '+cu;
+    document.getElementById('rr-cy').textContent=KS.fromMM(mC.cy,cu).toFixed(5)+' '+cu;
+    document.getElementById('rr-rmse').textContent=mC.rmse.toFixed(5)+' mm';
+    document.getElementById('rr-ec').textContent=KS.fromMM(mC.eccentricity,cu).toFixed(5)+' '+cu;
+    document.getElementById('rr-n').textContent=mC.n;
+    document.getElementById('rr-unit').textContent=(cu||'mm').toUpperCase();
   } else document.getElementById('reg-box').style.display='none';
 }
-function setKPI(id,val,cls){const el=document.getElementById(id);if(!el)return;el.textContent=val;if(cls&&el.classList.contains('kval'))el.className='kval '+cls;}
+function sk(id,val,cls){const el=document.getElementById(id);if(!el)return;el.textContent=val;if(cls&&el.classList.contains('kval'))el.className='kval '+cls;}
 
-// ── SECTION STRIP ──
-function renderSecStrip(){
+// ── TIRE STRIP ──
+function renderTireStrip(){
   const p=curP;if(!p)return;
-  const strip=document.getElementById('sec-strip');
+  const tires=p.tires||{};
+  const ntires=p.ntires||3;
   let h='';
-  for(let i=0;i<p.sections;i++){
-    const sd=p.sections_data?.[i]||{points:[]};
-    const m=KS.calcSectionMetrics(sd,p.diam);
-    const tol=p.tolerance||0.5;
-    const sc=m.ovalityPct>tol*2?'sr':m.ovalityPct>tol?'sy':'sg';
-    h+=`<button class="sbtn ${sc} ${i===curS?'active':''}" onclick="switchSec(${i})">${sd.name||'S'+(i+1)}</button>`;
+  for(let i=0;i<ntires;i++){
+    const tire=tires[i]||{};
+    const mV=KS.calcMetrics(tire.virola||{});
+    const st=KS.projectStatusLevel({...p,tires:{0:{virola:tire.virola||{}}}});
+    const sc=mV.ovalityPct>(p.critThreshold||1)?'sr':mV.ovalityPct>(p.warnThreshold||0.5)?'sy':'sg';
+    h+=`<button class="tbtn ${sc} ${i===curTire?'active':''}" onclick="switchTire(${i})">${tire.name||`Llanta ${i+1}`}</button>`;
   }
-  strip.innerHTML=h;
+  document.getElementById('tire-strip').innerHTML=h;
 }
 
-function switchSec(idx){
-  curS=idx;const p=curP;if(!p)return;
-  const sd=p.sections_data?.[idx]||{};
-  document.getElementById('sec-name-lbl').textContent=sd.name||`Sección ${idx+1}`;
-  renderSecStrip();renderMeasContainer();renderModeToggle();
-  KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);
-  drawSecChart();updateKPIs();
-}
-
-// ── MODE TOGGLE ──
-function renderModeToggle(){
-  const sd=curP?.sections_data?.[curS]||{};
-  const m=sd.inputMode||'cartesian';
-  document.getElementById('mt-cart').classList.toggle('active',m==='cartesian');
-  document.getElementById('mt-polar').classList.toggle('active',m==='polar');
-}
-function setMode(m){
+function switchTire(idx){
+  curTire=idx;curComp='virola';
   const p=curP;if(!p)return;
-  if(!p.sections_data) p.sections_data={};
-  if(!p.sections_data[curS]) p.sections_data[curS]={points:[]};
-  p.sections_data[curS].inputMode=m;
-  renderModeToggle();renderMeasContainer();drawSecChart();updateKPIs();markUnsaved();
+  const tire=(p.tires||{})[idx]||{};
+  document.getElementById('sec-name-lbl').textContent=tire.name||`Llanta ${idx+1}`;
+  renderTireStrip();renderCompTabs();renderMeasContainer();renderModeToggles();
+  KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curTire,195,switchTire);
+  drawChart();updateKPIs();
 }
 
-// ── MEASUREMENTS CONTAINER ──
-function renderMeasContainer(){
-  const p=curP;if(!p)return;
-  const sd=p.sections_data?.[curS]||{points:[],inputMode:'cartesian'};
-  const mode=sd.inputMode||'cartesian';
-  const pts=sd.points||[];
-  const mc=document.getElementById('meas-container');
-  if(mode==='cartesian') renderCartGrid(pts,sd,p,mc);
-  else renderPolarGrid(pts,sd,p,mc);
-}
-
-// ── CARTESIAN GRID (5 columns of X,Y pairs) ──
-function renderCartGrid(pts,sd,p,mc){
-  const N=5; // always 5 points
-  while(pts.length<N) pts.push({x:0,y:0});
-  let html=`<div style="margin-bottom:8px;font-size:11px;color:var(--t2)">
-    Ingresa las 5 coordenadas X y luego las 5 coordenadas Y — la regresión calcula el círculo óptimo
-  </div>
-  <div class="cart-grid">`;
-  for(let i=0;i<N;i++){
-    const pt=pts[i]||{x:0,y:0};
-    const m=KS.calcSectionMetrics(sd,p.diam);
-    const dist=m.fit?Math.sqrt((pt.x-m.cx)**2+(pt.y-m.cy)**2):0;
-    const dev=m.fit?dist-m.r:0;
-    const dc=m.fit?(Math.abs(dev)>m.r*0.01?(dev>0?'dev-pos':'dev-neg'):'dev-ok'):'';
-    html+=`<div class="cart-col">
-      <div class="col-hdr">Punto ${i+1}</div>
-      <div>
-        <div class="pt-lbl">X (mm)</div>
-        <input class="ptin ${dc}" type="number" step="0.01" value="${pt.x}" onchange="updCart(${i},'x',this.value)" placeholder="X">
-      </div>
-      <div>
-        <div class="pt-lbl">Y (mm)</div>
-        <input class="ptin ${dc}" type="number" step="0.01" value="${pt.y}" onchange="updCart(${i},'y',this.value)" placeholder="Y">
-      </div>
-      ${m.fit?`<div class="pt-lbl" style="color:${Math.abs(dev)>1?'var(--yellow)':'var(--green)'}">Res: ${dev>0?'+':''}${dev.toFixed(3)}</div>`:''}
-    </div>`;
-  }
-  html+=`</div>`;
-  mc.innerHTML=html;
-}
-
-function updCart(idx,field,val){
-  const p=curP;if(!p)return;
-  if(!p.sections_data) p.sections_data={};
-  if(!p.sections_data[curS]) p.sections_data[curS]={points:[],inputMode:'cartesian'};
-  while(p.sections_data[curS].points.length<=idx) p.sections_data[curS].points.push({x:0,y:0});
-  p.sections_data[curS].points[idx][field]=parseFloat(val)||0;
-  markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
-  KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);
-}
-
-// ── POLAR GRID ──
-function renderPolarGrid(pts,sd,p,mc){
-  const dnom=p.diam/2;
-  let h=`<div class="polar-grid">
-    <div class="polar-row polar-hdr"><span>#</span><span>Ángulo °</span><span>Radio mm</span><span>Dev.</span><span>Dev %</span><span></span></div>`;
-  pts.forEach((pt,i)=>{
-    const dev=pt.r-dnom, col=Math.abs(dev)>20?'var(--red)':Math.abs(dev)>10?'var(--yellow)':'var(--green)';
-    h+=`<div class="polar-row">
-      <span class="ix">${i+1}</span>
-      <input class="inp" type="number" value="${pt.a}" min="0" max="359" step="1" onchange="updPolar(${i},'a',this.value)">
-      <input class="inp" type="number" value="${pt.r}" step="0.01" onchange="updPolar(${i},'r',this.value)">
-      <span class="dv" style="color:${col}">${dev>0?'+':''}${dev.toFixed(1)}</span>
-      <span class="dv" style="color:${col}">${dev>0?'+':''}${(dev/dnom*100).toFixed(2)}%</span>
-      <button class="dbtn" onclick="delPolar(${i})">×</button>
-    </div>`;
+// ── COMPONENT TABS ──
+function renderCompTabs(){
+  const comp=getComp();
+  document.getElementById('ct-virola').classList.toggle('active',curComp==='virola');
+  document.getElementById('ct-virola').classList.toggle('virola',curComp==='virola');
+  document.getElementById('ct-rodIzq').classList.toggle('active',curComp==='rodIzq');
+  document.getElementById('ct-rodIzq').classList.toggle('rod',true);
+  document.getElementById('ct-rodDer').classList.toggle('active',curComp==='rodDer');
+  document.getElementById('ct-rodDer').classList.toggle('rod',true);
+  // Nombre componente
+  const compNames={virola:'🔵 Virola',rodIzq:'🟡 Rod. Izq.',rodDer:'🟡 Rod. Der.'};
+  ['virola','rodIzq','rodDer'].forEach(k=>{
+    const pts=(getTire()[k]?.points||[]).length;
+    const el=document.getElementById(`ct-${k}`);
+    if(el) el.textContent=`${compNames[k]} (${pts})`;
   });
-  h+=`<div style="display:flex;gap:7px;margin-top:8px">
-    <button class="bsm" style="font-size:11px" onclick="addPolar()">+ Punto</button>
-    <button class="bsm" style="font-size:11px" onclick="autoFill()">⚡ Distribuir</button>
-  </div></div>`;
+  // Diámetro nominal
+  const unit=comp.unit||'mm';
+  const nomDiam=comp.nomDiam?KS.fromMM(comp.nomDiam,unit):(curComp==='virola'?KS.fromMM(curP.diam,unit):KS.fromMM(900,unit));
+  document.getElementById('nom-diam-inp').value=nomDiam.toFixed(rdMode==='d'?3:3);
+  document.getElementById('nom-unit-sel').value=unit;
+  document.getElementById('nom-diam-lbl').textContent=`${rdMode==='r'?'Radio':'Diám.'} nominal ${compLabel()}:`;
+  document.getElementById('pts-per-lbl').textContent=curP.ptsPerTire||6;
+}
+
+function setComp(c){curComp=c;renderCompTabs();renderModeToggles();renderMeasContainer();}
+function compLabel(){return{virola:'Virola',rodIzq:'Rodillo Izq.',rodDer:'Rodillo Der.'}[curComp]||curComp;}
+
+// ── GETTERS / ENSURE ──
+function getTire(){
+  const p=curP;if(!p)return{};
+  if(!p.tires) p.tires={};
+  if(!p.tires[curTire]) p.tires[curTire]={name:`Llanta ${curTire+1}`,virola:{inputMode:'station',unit:'mm',points:[]},rodIzq:{inputMode:'station',unit:'mm',points:[]},rodDer:{inputMode:'station',unit:'mm',points:[]}};
+  return p.tires[curTire];
+}
+function getComp(){
+  const t=getTire();
+  if(!t[curComp]) t[curComp]={inputMode:'station',unit:'mm',points:[]};
+  return t[curComp];
+}
+function ensureComp(){return getComp();}
+
+// ── MODE TOGGLES ──
+function renderModeToggles(){
+  const comp=getComp();
+  const mode=comp.inputMode||'station';
+  const unit=comp.unit||'mm';
+  document.getElementById('mt-station').classList.toggle('active',mode==='station');
+  document.getElementById('mt-cart').classList.toggle('active',mode==='cartesian');
+  document.getElementById('unit-sel').value=unit;
+  document.getElementById('rdb-r').classList.toggle('active',rdMode==='r');
+  document.getElementById('rdb-d').classList.toggle('active',rdMode==='d');
+}
+function setMode(m){const c=ensureComp();c.inputMode=m;markUnsaved();renderModeToggles();renderMeasContainer();}
+function setUnit(u){const c=ensureComp();c.unit=u;markUnsaved();renderModeToggles();renderCompTabs();renderMeasContainer();updateKPIs();}
+function setRD(v){rdMode=v;renderModeToggles();renderCompTabs();renderMeasContainer();}
+function setNomDiam(v){
+  const c=ensureComp();const u=c.unit||'mm';
+  const vMM=rdMode==='d'?KS.toMM(v,u):KS.toMM(v*2,u);
+  c.nomDiam=vMM;markUnsaved();
+}
+function setNomDiamUnit(u){const c=ensureComp();c.unit=u;document.getElementById('unit-sel').value=u;setUnit(u);}
+
+// ── MEASUREMENTS TABLE ──
+function renderMeasContainer(){
+  const comp=getComp();
+  const mode=comp.inputMode||'station';
+  const unit=comp.unit||'mm';
+  const pts=comp.points||[];
+  const mc=document.getElementById('meas-container');
+  const mC=KS.calcMetrics(comp);
+
+  if(mode==='station') renderStationTable(pts,comp,mC,unit,mc);
+  else renderCartTable(pts,comp,mC,unit,mc);
+}
+
+// ── STATION TOTAL TABLE ──
+function renderStationTable(pts,comp,mC,unit,mc){
+  const distLabel=rdMode==='r'?`Distancia/Radio (${unit})`:`Distancia/Diám. (${unit})`;
+  let h=`<table class="meas-tbl"><thead><tr>
+    <th>#</th><th>αV vertical (°)</th><th>αH horiz. (°)</th><th>${distLabel}</th><th>Residual</th><th></th>
+  </tr></thead><tbody>`;
+  pts.forEach((pt,i)=>{
+    const dist_mm=KS.toMM(pt.dist||0,unit);
+    const rdispVal=rdMode==='r'?KS.fromMM(dist_mm,unit):KS.fromMM(dist_mm*2,unit);
+    let res='—',resCol='var(--t3)';
+    if(mC.fit){
+      const cart=KS.stationToCart(pt.aV||90,pt.aH||0,dist_mm);
+      const d=Math.sqrt((cart.x-mC.cx)**2+(cart.y-mC.cy)**2);
+      const r=d-mC.r;
+      res=(r>0?'+':'')+KS.fromMM(r,unit).toFixed(4)+' '+unit;
+      resCol=Math.abs(r)>mC.r*0.005?'var(--red)':Math.abs(r)>mC.r*0.002?'var(--yellow)':'var(--green)';
+    }
+    h+=`<tr>
+      <td style="text-align:center;font-size:9px;color:var(--t3);font-family:var(--mono)">${i+1}</td>
+      <td><input class="ptin" type="number" step="0.001" value="${(pt.aV!==undefined?pt.aV:90).toFixed(4)}" onchange="updStation(${i},'aV',this.value)"></td>
+      <td><input class="ptin" type="number" step="0.001" value="${(pt.aH||0).toFixed(4)}" onchange="updStation(${i},'aH',this.value)"></td>
+      <td><input class="ptin" type="number" step="0.00001" value="${rdispVal.toFixed(5)}" onchange="updStation(${i},'dist',this.value)"></td>
+      <td class="res-cell" style="color:${resCol}">${res}</td>
+      <td><button class="del-btn" onclick="delPt(${i})">×</button></td>
+    </tr>`;
+  });
+  h+=`</tbody></table>
+  <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
+    <button class="bsm" style="font-size:11px" onclick="addStationPt()">+ Punto</button>
+    <button class="bsm" style="font-size:11px" onclick="addMultiPts()">+ Múltiples</button>
+  </div>`;
   mc.innerHTML=h;
 }
 
-function updPolar(i,f,v){
-  const p=curP;if(!p||!p.sections_data?.[curS]) return;
-  p.sections_data[curS].points[i][f]=parseFloat(v)||0;
-  markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
-  KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);
+function updStation(i,field,val){
+  const c=ensureComp();if(!c.points[i])return;
+  const unit=c.unit||'mm';
+  if(field==='dist'){
+    let vMM=KS.toMM(parseFloat(val)||0,unit);
+    if(rdMode==='d') vMM=vMM/2;
+    c.points[i].dist=KS.fromMM(vMM,unit); // store in original unit
+  } else {
+    c.points[i][field]=parseFloat(val)||0;
+  }
+  markUnsaved();renderMeasContainer();drawChart();updateKPIs();
+  KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curTire,195,switchTire);
 }
-function delPolar(i){const p=curP;if(!p)return;p.sections_data[curS].points.splice(i,1);markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();}
-function addPolar(){
-  const p=curP;if(!p)return;
-  if(!p.sections_data[curS]) p.sections_data[curS]={points:[],inputMode:'polar'};
-  const pts=p.sections_data[curS].points;
-  const last=pts.length>0?pts[pts.length-1].a:0;
-  pts.push({a:(last+Math.round(360/Math.max(pts.length+1,4)))%360,r:p.diam/2});
-  markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
+function addStationPt(){
+  const c=ensureComp();if(!c.points)c.points=[];
+  const last=c.points.length>0?c.points[c.points.length-1]:{};
+  const unit=c.unit||'mm';
+  const nom=c.nomDiam?KS.fromMM(c.nomDiam/2,unit):KS.fromMM(curP.diam/2,unit);
+  c.points.push({aV:90,aH:((last.aH||0)+Math.round(360/Math.max(c.points.length+1,6)))%360,dist:parseFloat(nom.toFixed(5))});
+  markUnsaved();renderMeasContainer();renderCompTabs();
 }
-function autoFill(){
-  const n=parseInt(prompt('¿Cuántos puntos equidistantes?','8'));if(!n||n<2)return;
-  const p=curP;if(!p)return;
-  p.sections_data[curS].points=Array.from({length:n},(_,i)=>({a:Math.round(i*360/n),r:p.diam/2+(Math.random()-.5)*20}));
-  markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
+function addMultiPts(){
+  const n=parseInt(prompt(`¿Cuántos puntos agregar? (configurado: ${curP.ptsPerTire||6})`,curP.ptsPerTire||6));
+  if(!n||n<1)return;
+  const c=ensureComp();if(!c.points)c.points=[];
+  const unit=c.unit||'mm';
+  const nom=c.nomDiam?KS.fromMM(c.nomDiam/2,unit):KS.fromMM(curP.diam/2,unit);
+  for(let i=0;i<n;i++) c.points.push({aV:90,aH:Math.round(i*360/n),dist:parseFloat(nom.toFixed(5))});
+  markUnsaved();renderMeasContainer();renderCompTabs();
 }
 
-// ── DRAW SECTION CHART ──
-function drawSecChart(){
-  const p=curP;if(!p)return;
-  const sd=p.sections_data?.[curS]||{points:[],inputMode:'cartesian'};
-  const canvas=document.getElementById('sec-chart');
-  if(!canvas)return;
-  canvas.height=370;
-  KS.drawSectionChart(canvas,sd,p.diam,p.tolerance||0.5,sd.name||`Sección ${curS+1}`);
+// ── CARTESIAN TABLE ──
+function renderCartTable(pts,comp,mC,unit,mc){
+  const xLbl=rdMode==='r'?`X (${unit})`:`X* (${unit})`;
+  const yLbl=rdMode==='r'?`Y (${unit})`:`Y* (${unit})`;
+  let h=`<table class="meas-tbl"><thead><tr>
+    <th>#</th><th>${xLbl}</th><th>${yLbl}</th><th>Dist. centro</th><th>Residual</th><th></th>
+  </tr></thead><tbody>`;
+  pts.forEach((pt,i)=>{
+    const xmm=KS.toMM(pt.x||0,unit),ymm=KS.toMM(pt.y||0,unit);
+    const xd=KS.fromMM(xmm,unit),yd=KS.fromMM(ymm,unit);
+    let dist='—',res='—',resCol='var(--t3)';
+    if(mC.fit){
+      const d=Math.sqrt((xmm-mC.cx)**2+(ymm-mC.cy)**2);
+      const r=d-mC.r;
+      dist=KS.fromMM(d,unit).toFixed(4)+' '+unit;
+      res=(r>0?'+':'')+KS.fromMM(r,unit).toFixed(4)+' '+unit;
+      resCol=Math.abs(r)>mC.r*0.005?'var(--red)':Math.abs(r)>mC.r*0.002?'var(--yellow)':'var(--green)';
+    }
+    h+=`<tr>
+      <td style="text-align:center;font-size:9px;color:var(--t3);font-family:var(--mono)">${i+1}</td>
+      <td><input class="ptin" type="number" step="0.00001" value="${xd.toFixed(5)}" onchange="updCart(${i},'x',this.value)"></td>
+      <td><input class="ptin" type="number" step="0.00001" value="${yd.toFixed(5)}" onchange="updCart(${i},'y',this.value)"></td>
+      <td class="res-cell" style="color:var(--cyan)">${dist}</td>
+      <td class="res-cell" style="color:${resCol}">${res}</td>
+      <td><button class="del-btn" onclick="delPt(${i})">×</button></td>
+    </tr>`;
+  });
+  h+=`</tbody></table>
+  <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
+    <button class="bsm" style="font-size:11px" onclick="addCartPt()">+ Punto</button>
+    <button class="bsm" style="font-size:11px" onclick="addMultiCartPts()">+ Múltiples</button>
+  </div>`;
+  mc.innerHTML=h;
 }
 
-// ── CSV IMPORT ──
+function updCart(i,field,val){
+  const c=ensureComp();if(!c.points[i])return;
+  const unit=c.unit||'mm';
+  const vMM=KS.toMM(parseFloat(val)||0,unit);
+  c.points[i][field]=KS.fromMM(vMM,unit);
+  markUnsaved();renderMeasContainer();drawChart();updateKPIs();
+  KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curTire,195,switchTire);
+}
+function addCartPt(){
+  const c=ensureComp();if(!c.points)c.points=[];
+  c.points.push({x:0,y:0});markUnsaved();renderMeasContainer();renderCompTabs();
+}
+function addMultiCartPts(){
+  const n=parseInt(prompt('¿Cuántos puntos?',curP.ptsPerTire||6));
+  if(!n||n<1)return;
+  const c=ensureComp();if(!c.points)c.points=[];
+  for(let i=0;i<n;i++) c.points.push({x:0,y:0});
+  markUnsaved();renderMeasContainer();renderCompTabs();
+}
+function delPt(i){const c=ensureComp();c.points.splice(i,1);markUnsaved();renderMeasContainer();renderCompTabs();drawChart();updateKPIs();}
+
+// ── DRAW ──
+function drawChart(){
+  const p=curP;if(!p)return;
+  const tire=(p.tires||{})[curTire]||{};
+  const canvas=document.getElementById('sec-chart');if(!canvas)return;
+  canvas.height=400;
+  KS.drawSectionChart(canvas,tire,p);
+}
+
+// ── CSV ──
 function handleCSV(evt){
   const file=evt.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=e=>{
-    const lines=e.target.result.trim().split('\n');
+    const c=ensureComp();
+    const unit=c.unit||'mm';
+    const mode=c.inputMode||'station';
     const pts=[];
-    const mode=curP?.sections_data?.[curS]?.inputMode||'cartesian';
-    lines.forEach(line=>{
-      const[a,b]=line.split(',').map(v=>parseFloat(v.trim()));
-      if(!isNaN(a)&&!isNaN(b)){
-        if(mode==='cartesian') pts.push({x:a,y:b});
-        else pts.push({a,r:b});
+    e.target.result.trim().split('\n').forEach(line=>{
+      const v=line.split(',').map(s=>parseFloat(s.trim()));
+      if(mode==='station'&&v.length>=3&&!isNaN(v[0])&&!isNaN(v[1])&&!isNaN(v[2])){
+        let dist=v[2];
+        if(rdMode==='d') dist=dist/2;
+        pts.push({aV:v[0],aH:v[1],dist});
+      } else if(mode==='cartesian'&&v.length>=2&&!isNaN(v[0])&&!isNaN(v[1])){
+        pts.push({x:v[0],y:v[1]});
       }
     });
-    if(!pts.length){alert('Sin datos válidos');return;}
-    const p=curP;if(!p)return;
-    if(!p.sections_data) p.sections_data={};
-    if(!p.sections_data[curS]) p.sections_data[curS]={inputMode:mode,points:[]};
-    p.sections_data[curS].points=pts;
-    markUnsaved();renderMeasContainer();drawSecChart();updateKPIs();
-    KS.drawKilnCylinder(document.getElementById('kiln-canvas'),p,curS,210,switchSec);
-    showToast(`✓ ${pts.length} puntos importados`,'ok');
+    if(!pts.length){alert('Sin datos válidos. Formato: aV,aH,dist (est. total) o x,y (cartesiano)');return;}
+    c.points=pts;
+    markUnsaved();renderMeasContainer();renderCompTabs();drawChart();updateKPIs();
+    KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curTire,195,switchTire);
+    showToast(`✓ ${pts.length} puntos importados en ${compLabel()}`,'ok');
   };
   reader.readAsText(file);evt.target.value='';
 }
 
 // ── SAVE ──
-function markUnsaved(){unsaved=true;document.getElementById('udot').classList.add('show');document.getElementById('save-status').textContent='Cambios sin guardar…';renderHornoList();}
-async function saveSection(){
+function markUnsaved(){
+  [document.getElementById('udot'),document.getElementById('udot2')].forEach(el=>{if(el)el.classList.add('show');});
+  document.getElementById('save-status').textContent='Cambios sin guardar…';
+  renderHornoList();
+}
+async function saveTire(){
   if(!curP)return;
   if(!db){showToast('Guardado localmente (demo)','ok');markSaved();return;}
-  try{
-    const{id,...data}=curP;
-    await db.collection('projects').doc(id).set(data);
-    markSaved();showToast('✓ Guardado y sincronizado','ok');
-  }catch(e){showToast('Error al guardar: '+e.message,'err');}
+  try{const{id,...data}=curP;await db.collection('projects').doc(id).set(data);markSaved();showToast('✓ Guardado y sincronizado','ok');}
+  catch(e){showToast('Error: '+e.message,'err');}
 }
-function markSaved(){unsaved=false;document.getElementById('udot').classList.remove('show');document.getElementById('save-status').textContent='Guardado — '+new Date().toLocaleTimeString('es');}
+function markSaved(){
+  [document.getElementById('udot'),document.getElementById('udot2')].forEach(el=>{if(el)el.classList.remove('show');});
+  document.getElementById('save-status').textContent='Guardado · '+new Date().toLocaleTimeString('es');
+}
 
-// ── EXPORT CSV ──
+// ── EXPORT ──
 function exportCSV(){
   const p=curP;if(!p)return;
-  let csv=`REPORTE KILNSCAN PRO\nProyecto:,${p.name}\nCódigo:,${p.code}\nDiámetro nominal:,${p.diam} mm\nFecha:,${new Date().toLocaleDateString('es')}\n\n`;
-  csv+=`Sección,Nombre,Modo,Puntos,Ovalidad %,Radio ajustado mm,Centro X mm,Centro Y mm,RMSE mm,Estado\n`;
-  for(let i=0;i<p.sections;i++){
-    const sd=p.sections_data?.[i]||{points:[],name:`S${i+1}`,inputMode:'cartesian'};
-    const m=KS.calcSectionMetrics(sd,p.diam);
-    const tol=p.tolerance||0.5;
-    const st=m.ovalityPct>tol*2?'CRÍTICO':m.ovalityPct>tol?'ATENCIÓN':'OK';
-    csv+=`${i+1},"${sd.name}",${sd.inputMode||'cartesian'},${(sd.points||[]).length},${m.ovalityPct.toFixed(5)},${m.r.toFixed(4)},${m.cx.toFixed(4)},${m.cy.toFixed(4)},${m.rmse.toFixed(5)},${st}\n`;
+  const tires=p.tires||{};
+  const ntires=p.ntires||3;
+  let csv=`REPORTE KILNSCAN PRO\nProyecto:,${p.name}\nCódigo:,${p.code}\nDiámetro nominal:,${p.diam} mm\nInclinación:,${p.inclination||3.5}°\nFecha:,${new Date().toLocaleDateString('es')}\n\n`;
+  csv+=`Llanta,Componente,Modo,Unidad,Puntos,Ovalidad %,Radio mm,Diám. mm,Cx mm,Cy mm,RMSE mm,Estado\n`;
+  for(let i=0;i<ntires;i++){
+    const tire=tires[i]||{};
+    ['virola','rodIzq','rodDer'].forEach(compKey=>{
+      const comp=tire[compKey]||{};
+      const m=KS.calcMetrics(comp);
+      const st=m.ovalityPct>(p.critThreshold||1)?'CRÍTICO':m.ovalityPct>(p.warnThreshold||0.5)?'ATENCIÓN':'OK';
+      const name={virola:'Virola',rodIzq:'Rodillo Izq.',rodDer:'Rodillo Der.'}[compKey];
+      csv+=`${i+1},"${tire?.name||`Llanta ${i+1}`}","${name}",${comp.inputMode||'station'},${comp.unit||'mm'},${(comp.points||[]).length},${m.ovalityPct.toFixed(6)},${m.r.toFixed(4)},${(m.r*2).toFixed(4)},${m.cx.toFixed(4)},${m.cy.toFixed(4)},${m.rmse.toFixed(5)},${st}\n`;
+    });
   }
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
@@ -705,7 +858,7 @@ function exportCSV(){
 }
 
 function showToast(msg,t='info'){const el=document.getElementById('toast');el.textContent=msg;el.className=`toast ${t} show`;setTimeout(()=>el.classList.remove('show'),3200);}
-window.addEventListener('resize',()=>{if(curP){KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curS,210,switchSec);drawSecChart();}});
+window.addEventListener('resize',()=>{if(curP){KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curTire,195,switchTire);drawChart();}});
 </script>
 </body>
 </html>

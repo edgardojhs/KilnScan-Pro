@@ -395,15 +395,15 @@ function loadDemoData(){
     "c2":{id:"c2",name:"Holcim Colombia — Nobsa",email:"holcim@nobsa.com",plan:"annual",status:"active",startDate:"2025-01-01",expiresAt:"2026-12-31",projectCode:"HLC-N1-2M5P"},
   };
   projects={
-    "p1":{id:"p1",clientId:"c1",name:"Horno 1",code:"HRN-01",diam:4200,sections:6,length:75,tolerance:0.5,inclination:3.5,sections_data:genDemoSections(4200,[0.18,0.12,0.64,0.38,1.02,0.21])},
-    "p2":{id:"p2",clientId:"c1",name:"Horno 2",code:"HRN-02",diam:4000,sections:5,length:68,tolerance:0.5,inclination:3.5,sections_data:genDemoSections(4000,[0.10,0.09,1.24,0.08,0.11])},
-    "p3":{id:"p3",clientId:"c2",name:"Horno Principal",code:"HRN-03",diam:3800,sections:5,length:60,tolerance:0.5,inclination:4.0,sections_data:genDemoSections(3800,[0.08,0.11,0.09,0.07,0.10])},
+    "p1":{id:"p1",clientId:"c1",name:"Horno 1",code:"HRN-01",diam:4200,ntires:3,length:75,inclination:3.5,warnThreshold:0.5,critThreshold:1.0,ptsPerTire:6,rodDiam:900,tires:mkTires(4200,[0.18,0.63,0.22])},
+    "p2":{id:"p2",clientId:"c1",name:"Horno 2",code:"HRN-02",diam:4000,ntires:3,length:68,inclination:3.5,warnThreshold:0.5,critThreshold:1.0,ptsPerTire:6,rodDiam:900,tires:mkTires(4000,[0.10,1.18,0.11])},
+    "p3":{id:"p3",clientId:"c2",name:"Horno Principal",code:"HRN-03",diam:3800,ntires:3,length:60,inclination:4.2,warnThreshold:0.5,critThreshold:1.0,ptsPerTire:6,rodDiam:850,tires:mkTires(3800,[0.08,0.11,0.09])},
   };
 }
-function genDemoSections(diam,ovs){
-  const sd={};
-  ovs.forEach((ov,i)=>{const s=KS.generateDemoSection(diam,ov);s.name=`S${i+1}`;sd[i]=s;});
-  return sd;
+function mkTires(diam,ovs){
+  const t={};
+  ovs.forEach((ov,i)=>{t[i]={...KS.genDemoTire(diam,ov,900),name:`Llanta ${i+1}`};});
+  return t;
 }
 
 // ══════════════════════════════════════════
@@ -460,7 +460,7 @@ function renderDash(){
   grid.innerHTML=pr.map(p=>{
     const cl2=clients[p.clientId]||{name:'—',status:'unknown'};
     const ov=KS.maxOvalityProject(p);
-    const col=KS.ovColor(ov,p.tolerance||0.5);
+    const col=KS.ovColor(ov,p);
     const st=KS.projectStatusLevel(p);
     const stL=st==='ok'?'Normal':st==='warn'?'Atención':'Crítico';
     return `<div class="pc" style="cursor:pointer" onclick="openDp('${p.clientId}','${p.id}')">
@@ -476,7 +476,7 @@ function renderDash(){
       <canvas id="dc-${p.id}" height="55" style="width:100%;border-radius:5px;"></canvas>
       <div class="hm-leg"><span>OK</span><div class="hm-bar"></div><span>Crítico</span></div>
       <div style="display:flex;gap:8px;font-size:10px;color:var(--t2);margin-top:6px">
-        <span>⌀${p.diam}mm</span><span>${p.sections} secc.</span><span>${p.length}m</span><span>Tol:±${p.tolerance||0.5}%</span>
+        <span>⌀${p.diam}mm</span><span>${p.ntires||3} llantas</span><span>${p.length}m</span><span>${p.inclination||3.5}°</span>
       </div>
     </div>`;
   }).join('');
@@ -565,11 +565,11 @@ function openDp(clientId){
   <div class="seclbl">Hornos / Proyectos (${cps.length})</div>`;
   if(!cps.length) html+='<div style="padding:20px;font-size:12px;color:var(--t3);text-align:center">Sin hornos. Este cliente no tiene proyectos registrados.</div>';
   else html+=cps.map(p=>{
-    const ov=KS.maxOvalityProject(p),tol=p.tolerance||0.5,col=KS.ovColor(ov,tol);
+    const ov=KS.maxOvalityProject(p),col=KS.ovColor(ov,p);
     return `<div class="pc">
       <div class="pctop">
         <div><div class="pcn">${p.name} <span style="color:var(--t3);font-weight:400">${p.code}</span></div>
-        <div style="font-size:10px;color:var(--t2)">⌀${p.diam}mm · ${p.sections} secc. · ${p.length}m</div></div>
+        <div style="font-size:10px;color:var(--t2)">⌀${p.diam}mm · ${p.ntires||3} llantas · ${p.length}m · ${p.inclination||3.5}°</div></div>
         <div style="text-align:right"><div style="font-size:18px;font-weight:800;font-family:var(--mono);color:${col}">${ov.toFixed(2)}%</div>
         <div style="font-size:9px;color:${col}">ovalidad máx</div></div>
       </div>
@@ -753,8 +753,9 @@ async function createClient(){
     hornoRows.forEach((h,i)=>{
       const pid='pr-'+Date.now()+'-'+i;
       const sd={};
-      for(let s=0;s<(h.sections||6);s++) sd[s]={name:`S${s+1}`,inputMode:'cartesian',points:[{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}]};
-      projects[pid]={id:pid,clientId:cid,name:h.nombre,code:h.code,diam:h.diam||4200,sections:h.sections||6,length:h.length||75,tolerance:h.tol||0.5,inclination:3.5,sections_data:sd};
+      const ntiles=h.ntires||3;
+      for(let t=0;t<ntiles;t++) sd[t]={name:`Llanta ${t+1}`,virola:{inputMode:'station',unit:'mm',nomDiam:h.diam||4200,points:[]},rodIzq:{inputMode:'station',unit:'mm',nomDiam:h.rodDiam||900,points:[]},rodDer:{inputMode:'station',unit:'mm',nomDiam:h.rodDiam||900,points:[]}};
+      projects[pid]={id:pid,clientId:cid,name:h.nombre,code:h.code,diam:h.diam||4200,ntires:ntiles,length:h.length||75,inclination:h.inclination||3.5,warnThreshold:0.5,critThreshold:1.0,ptsPerTire:h.ptsPerTire||6,rodDiam:h.rodDiam||900,tires:sd};
     });
     finishCreate(email,pass,code);
     return;
@@ -787,19 +788,22 @@ async function createClient(){
     for(let i=0;i<hornoRows.length;i++){
       const h=hornoRows[i];
       const sd={};
-      for(let s=0;s<(h.sections||6);s++){
-        sd[s]={name:`S${s+1}`,inputMode:'cartesian',points:[{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}]};
+      const ntf=h.ntires||3;
+      for(let t=0;t<ntf;t++){
+        sd[t]={name:`Llanta ${t+1}`,virola:{inputMode:'station',unit:'mm',nomDiam:h.diam||4200,points:[]},rodIzq:{inputMode:'station',unit:'mm',nomDiam:h.rodDiam||900,points:[]},rodDer:{inputMode:'station',unit:'mm',nomDiam:h.rodDiam||900,points:[]}};
       }
       await db.collection('projects').add({
         clientId,
         name:h.nombre||`Horno ${i+1}`,
         code:h.code||`HRN-0${i+1}`,
         diam:h.diam||4200,
-        sections:h.sections||6,
+        ntires:ntf,
         length:h.length||75,
-        tolerance:h.tol||0.5,
-        inclination:3.5,
-        sections_data:sd,
+        inclination:h.inclination||3.5,
+        warnThreshold:0.5,critThreshold:1.0,
+        ptsPerTire:h.ptsPerTire||6,
+        rodDiam:h.rodDiam||900,
+        tires:sd,
         createdAt:new Date().toISOString()
       });
     }
