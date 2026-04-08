@@ -28,7 +28,7 @@ html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t
 
 /* LOGIN */
 #login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;}
-.lwrap{display:flex;max-width:800px;width:94vw;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);overflow:hidden;max-height:96vh;}
+.lwrap{display:flex;max-width:800px;width:94vw;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);overflow:hidden;max-height:98vh;}
 .lleft{flex:1;padding:36px 30px;background:linear-gradient(140deg,var(--s2),var(--s3));border-right:1px solid var(--b1);display:flex;flex-direction:column;justify-content:center;overflow-y:auto;}
 .lright{width:315px;padding:30px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto;}
 .lbrand{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
@@ -301,7 +301,7 @@ html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t
                 <span class="ptitle">📐 Sección transversal — <span id="sec-name-lbl">—</span></span>
               </div>
               <div class="pbody" style="display:flex;flex-direction:column;align-items:center">
-                <canvas id="sec-chart" height="400" style="max-width:400px;width:100%"></canvas>
+                <canvas id="sec-chart" height="440" style="max-width:420px;width:100%"></canvas>
               </div>
             </div>
 
@@ -344,7 +344,7 @@ html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t
                 <!-- Diámetro nominal del componente -->
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;background:var(--s3);border-radius:var(--r);padding:7px 10px;flex-wrap:wrap;">
                   <span style="font-size:10px;color:var(--t2);font-weight:600;" id="nom-diam-lbl">Diám. nominal virola:</span>
-                  <input class="ptin" style="width:95px" type="number" step="0.001" id="nom-diam-inp" onchange="setNomDiam(+this.value)">
+                  <input class="ptin" style="width:95px" type="number" step="0.001" id="nom-diam-inp" oninput="setNomDiam(+this.value)" onchange="setNomDiam(+this.value)">
                   <select class="usel" id="nom-unit-sel" onchange="setNomDiamUnit(this.value)" style="font-size:10px;padding:4px 7px">
                     <option value="mm">mm</option><option value="cm">cm</option><option value="m">m</option>
                   </select>
@@ -601,8 +601,9 @@ function renderCompTabs(){
   });
   // Diámetro nominal
   const unit=comp.unit||'mm';
-  const nomDiam=comp.nomDiam?KS.fromMM(comp.nomDiam,unit):(curComp==='virola'?KS.fromMM(curP.diam,unit):KS.fromMM(900,unit));
-  document.getElementById('nom-diam-inp').value=nomDiam.toFixed(rdMode==='d'?3:3);
+  const nomDiamMM=comp.nomDiam||(curComp==='virola'?curP.diam:900);
+  const nomDisplayVal=rdMode==='r'?KS.fromMM(nomDiamMM/2,unit):KS.fromMM(nomDiamMM,unit);
+  document.getElementById('nom-diam-inp').value=nomDisplayVal.toFixed(4);
   document.getElementById('nom-unit-sel').value=unit;
   document.getElementById('nom-diam-lbl').textContent=`${rdMode==='r'?'Radio':'Diám.'} nominal ${compLabel()}:`;
   document.getElementById('pts-per-lbl').textContent=curP.ptsPerTire||6;
@@ -640,9 +641,10 @@ function setMode(m){const c=ensureComp();c.inputMode=m;markUnsaved();renderModeT
 function setUnit(u){const c=ensureComp();c.unit=u;markUnsaved();renderModeToggles();renderCompTabs();renderMeasContainer();updateKPIs();}
 function setRD(v){rdMode=v;renderModeToggles();renderCompTabs();renderMeasContainer();}
 function setNomDiam(v){
-  const c=ensureComp();const u=c.unit||'mm';
-  const vMM=rdMode==='d'?KS.toMM(v,u):KS.toMM(v*2,u);
-  c.nomDiam=vMM;markUnsaved();
+  const comp2=ensureComp();const u=comp2.unit||'mm';
+  // rdMode='r': user typed radius → diam=r*2; rdMode='d': user typed diameter
+  const vMM=rdMode==='r'?KS.toMM(v*2,u):KS.toMM(v,u);
+  comp2.nomDiam=vMM;markUnsaved();
 }
 function setNomDiamUnit(u){const c=ensureComp();c.unit=u;document.getElementById('unit-sel').value=u;setUnit(u);}
 
@@ -678,9 +680,9 @@ function renderStationTable(pts,comp,mC,unit,mc){
     }
     h+=`<tr>
       <td style="text-align:center;font-size:9px;color:var(--t3);font-family:var(--mono)">${i+1}</td>
-      <td><input class="ptin" type="number" step="0.001" value="${(pt.aV!==undefined?pt.aV:90).toFixed(4)}" onchange="updStation(${i},'aV',this.value)"></td>
-      <td><input class="ptin" type="number" step="0.001" value="${(pt.aH||0).toFixed(4)}" onchange="updStation(${i},'aH',this.value)"></td>
-      <td><input class="ptin" type="number" step="0.00001" value="${rdispVal.toFixed(5)}" onchange="updStation(${i},'dist',this.value)"></td>
+      <td><input class="ptin" type="number" step="0.001" value="${(pt.aV!==undefined?pt.aV:90).toFixed(4)}" oninput="updStation(${i},'aV',this.value)" onchange="updStation(${i},'aV',this.value)"></td>
+      <td><input class="ptin" type="number" step="0.001" value="${(pt.aH||0).toFixed(4)}" oninput="updStation(${i},'aH',this.value)" onchange="updStation(${i},'aH',this.value)"></td>
+      <td><input class="ptin" type="number" step="0.00001" value="${rdispVal.toFixed(5)}" oninput="updStation(${i},'dist',this.value)" onchange="updStation(${i},'dist',this.value)"></td>
       <td class="res-cell" style="color:${resCol}">${res}</td>
       <td><button class="del-btn" onclick="delPt(${i})">×</button></td>
     </tr>`;
@@ -694,14 +696,16 @@ function renderStationTable(pts,comp,mC,unit,mc){
 }
 
 function updStation(i,field,val){
-  const c=ensureComp();if(!c.points[i])return;
+  const c=ensureComp();if(!c.points||!c.points[i])return;
+  const parsed=parseFloat(val);
+  if(isNaN(parsed)) return; // don't update on intermediate/incomplete input
   const unit=c.unit||'mm';
   if(field==='dist'){
-    let vMM=KS.toMM(parseFloat(val)||0,unit);
+    let vMM=KS.toMM(parsed,unit);
     if(rdMode==='d') vMM=vMM/2;
-    c.points[i].dist=KS.fromMM(vMM,unit); // store in original unit
+    c.points[i].dist=KS.fromMM(vMM,unit);
   } else {
-    c.points[i][field]=parseFloat(val)||0;
+    c.points[i][field]=parsed;
   }
   markUnsaved();renderMeasContainer();drawChart();updateKPIs();
   KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curTire,195,switchTire);
@@ -726,10 +730,10 @@ function addMultiPts(){
 
 // ── CARTESIAN TABLE ──
 function renderCartTable(pts,comp,mC,unit,mc){
-  const xLbl=rdMode==='r'?`X (${unit})`:`X* (${unit})`;
-  const yLbl=rdMode==='r'?`Y (${unit})`:`Y* (${unit})`;
+  const xLbl=`X (${unit})`;
+  const yLbl=`Y (${unit})`;
   let h=`<table class="meas-tbl"><thead><tr>
-    <th>#</th><th>${xLbl}</th><th>${yLbl}</th><th>Dist. centro</th><th>Residual</th><th></th>
+    <th>#</th><th style="color:var(--cyan);font-size:11px">${xLbl}</th><th style="color:var(--cyan);font-size:11px">${yLbl}</th><th>Dist.</th><th>Residual</th><th></th>
   </tr></thead><tbody>`;
   pts.forEach((pt,i)=>{
     const xmm=KS.toMM(pt.x||0,unit),ymm=KS.toMM(pt.y||0,unit);
@@ -744,8 +748,8 @@ function renderCartTable(pts,comp,mC,unit,mc){
     }
     h+=`<tr>
       <td style="text-align:center;font-size:9px;color:var(--t3);font-family:var(--mono)">${i+1}</td>
-      <td><input class="ptin" type="number" step="0.00001" value="${xd.toFixed(5)}" onchange="updCart(${i},'x',this.value)"></td>
-      <td><input class="ptin" type="number" step="0.00001" value="${yd.toFixed(5)}" onchange="updCart(${i},'y',this.value)"></td>
+      <td><input class="ptin" type="number" step="0.00001" value="${xd.toFixed(5)}" oninput="updCart(${i},'x',this.value)" onchange="updCart(${i},'x',this.value)"></td>
+      <td><input class="ptin" type="number" step="0.00001" value="${yd.toFixed(5)}" oninput="updCart(${i},'y',this.value)" onchange="updCart(${i},'y',this.value)"></td>
       <td class="res-cell" style="color:var(--cyan)">${dist}</td>
       <td class="res-cell" style="color:${resCol}">${res}</td>
       <td><button class="del-btn" onclick="delPt(${i})">×</button></td>
@@ -760,9 +764,11 @@ function renderCartTable(pts,comp,mC,unit,mc){
 }
 
 function updCart(i,field,val){
-  const c=ensureComp();if(!c.points[i])return;
+  const c=ensureComp();if(!c.points||!c.points[i])return;
+  const parsed=parseFloat(val);
+  if(isNaN(parsed)) return;
   const unit=c.unit||'mm';
-  const vMM=KS.toMM(parseFloat(val)||0,unit);
+  const vMM=KS.toMM(parsed,unit);
   c.points[i][field]=KS.fromMM(vMM,unit);
   markUnsaved();renderMeasContainer();drawChart();updateKPIs();
   KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curTire,195,switchTire);
