@@ -229,8 +229,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--t1);min-height:100
         <div class="kg">
           <div class="kc kfire"><div class="klbl">Clientes activos</div><div class="kval kfire" id="kc1">—</div><div class="ksub">Licencias vigentes</div></div>
           <div class="kc kcyan"><div class="klbl">Hornos totales</div><div class="kval kcyan" id="kc2">—</div><div class="ksub">Proyectos registrados</div></div>
-          <div class="kc kgreen"><div class="klbl">Estado normal</div><div class="kval kgreen" id="kc3">—</div><div class="ksub">Dentro de tolerancia</div></div>
-          <div class="kc kyellow"><div class="klbl">En atención</div><div class="kval kyellow" id="kc4">—</div><div class="ksub">Supera tolerancia</div></div>
+          <div class="kc kgreen"><div class="klbl">Estado normal</div><div class="kval kgreen" id="kc3">—</div><div class="ksub">Dentro del umbral</div></div>
+          <div class="kc kyellow"><div class="klbl">En atención</div><div class="kval kyellow" id="kc4">—</div><div class="ksub">Supera umbral warn</div></div>
           <div class="kc kred"><div class="klbl">Críticos</div><div class="kval kred" id="kc5">—</div><div class="ksub">Requieren intervención</div></div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;" id="dash-grid"></div>
@@ -708,16 +708,16 @@ function renderHornoRows(){
   if(!hornoRows.length){cont.innerHTML='<div style="font-size:12px;color:var(--t3);padding:8px 0">Sin hornos configurados</div>';return;}
 
   let html=`<div style="display:grid;grid-template-columns:1fr 90px 85px 70px 65px 65px 28px;gap:6px;align-items:center;padding:6px 0;font-size:10px;font-weight:700;color:var(--t4);letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--b1);margin-bottom:6px">
-    <span>Nombre</span><span>Código</span><span>Diám. mm</span><span>Secc.</span><span>Long. m</span><span>Tol. %</span><span></span>
+    <span>Nombre horno</span><span>Código</span><span>⌀ mm</span><span>Llantas</span><span>Long. m</span><span>Incl. °</span><span></span>
   </div>`;
   hornoRows.forEach((h,i)=>{
     html+=`<div style="display:grid;grid-template-columns:1fr 90px 85px 70px 65px 65px 28px;gap:6px;align-items:center;margin-bottom:5px">
       <input class="fi" style="padding:6px 8px;font-size:12px" value="${h.nombre}" onchange="hornoRows[${i}].nombre=this.value">
       <input class="fi" style="padding:6px 8px;font-size:12px;font-family:var(--mono)" value="${h.code}" onchange="hornoRows[${i}].code=this.value">
       <input class="fi" style="padding:6px 8px;font-size:12px" type="number" value="${h.diam}" onchange="hornoRows[${i}].diam=+this.value">
-      <input class="fi" style="padding:6px 8px;font-size:12px" type="number" value="${h.sections}" min="1" max="20" onchange="hornoRows[${i}].sections=+this.value">
+      <input class="fi" style="padding:6px 8px;font-size:12px" type="number" value="${h.ntires||3}" min="1" max="10" onchange="hornoRows[${i}].ntires=+this.value" title="Número de llantas">
       <input class="fi" style="padding:6px 8px;font-size:12px" type="number" value="${h.length}" onchange="hornoRows[${i}].length=+this.value">
-      <input class="fi" style="padding:6px 8px;font-size:12px" type="number" value="${h.tol||0.5}" step="0.1" onchange="hornoRows[${i}].tol=+this.value">
+      <input class="fi" style="padding:6px 8px;font-size:12px" type="number" value="${h.inclination||3.5}" step="0.1" onchange="hornoRows[${i}].inclination=+this.value" title="Grados de inclinación">
       <button class="bicon" onclick="removeHornoRow(${i})" style="color:var(--red)">×</button>
     </div>`;
   });
@@ -753,7 +753,7 @@ async function createClient(){
     hornoRows.forEach((h,i)=>{
       const pid='pr-'+Date.now()+'-'+i;
       const sd={};
-      const ntiles=h.ntires||3;
+      const ntiles=h.ntires||3; // llantas
       for(let t=0;t<ntiles;t++) sd[t]={name:`Llanta ${t+1}`,virola:{inputMode:'station',unit:'mm',nomDiam:h.diam||4200,points:[]},rodIzq:{inputMode:'station',unit:'mm',nomDiam:h.rodDiam||900,points:[]},rodDer:{inputMode:'station',unit:'mm',nomDiam:h.rodDiam||900,points:[]}};
       projects[pid]={id:pid,clientId:cid,name:h.nombre,code:h.code,diam:h.diam||4200,ntires:ntiles,length:h.length||75,inclination:h.inclination||3.5,warnThreshold:0.5,critThreshold:1.0,ptsPerTire:h.ptsPerTire||6,rodDiam:h.rodDiam||900,tires:sd};
     });

@@ -36,15 +36,23 @@ function ptsToCartMM(points, inputMode, unit) {
   const out = [];
   if (inputMode === 'station') {
     for (const p of points) {
-      if (p.aV === undefined || p.aH === undefined || p.dist === undefined) continue;
-      const dist_mm = toMM(p.dist, unit);
-      const c = stationToCart(p.aV, p.aH, dist_mm);
-      if (isFinite(c.x) && isFinite(c.y)) out.push(c);
+      if (p.aH === undefined) continue;
+      // Prefer dist_mm (stored in mm), fallback to toMM(dist, unit)
+      const dist_mm = p.dist_mm !== undefined ? p.dist_mm
+                    : (p.dist !== undefined ? toMM(p.dist, unit) : 0);
+      if (!dist_mm) continue;
+      const aV = p.aV !== undefined ? p.aV : 90;
+      const cart = stationToCart(aV, p.aH, dist_mm);
+      if (isFinite(cart.x) && isFinite(cart.y)) out.push(cart);
     }
   } else {
     for (const p of points) {
-      if (p.x === undefined || p.y === undefined) continue;
-      const xmm = toMM(p.x, unit), ymm = toMM(p.y, unit);
+      // Prefer x_mm/y_mm (stored in mm), fallback to toMM(x, unit)
+      const xmm = p.x_mm !== undefined ? p.x_mm
+                : (p.x !== undefined ? toMM(p.x, unit) : null);
+      const ymm = p.y_mm !== undefined ? p.y_mm
+                : (p.y !== undefined ? toMM(p.y, unit) : null);
+      if (xmm === null || ymm === null) continue;
       if (isFinite(xmm) && isFinite(ymm)) out.push({ x: xmm, y: ymm });
     }
   }

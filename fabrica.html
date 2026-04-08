@@ -344,7 +344,7 @@ html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t
                 <!-- Diámetro nominal del componente -->
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;background:var(--s3);border-radius:var(--r);padding:7px 10px;flex-wrap:wrap;">
                   <span style="font-size:10px;color:var(--t2);font-weight:600;" id="nom-diam-lbl">Diám. nominal virola:</span>
-                  <input class="ptin" style="width:95px" type="number" step="0.001" id="nom-diam-inp" oninput="setNomDiam(+this.value)" onchange="setNomDiam(+this.value)">
+                  <input class="ptin" style="width:95px" type="text" inputmode="decimal" id="nom-diam-inp" placeholder="valor" onblur="setNomDiam(parseFloat(this.value.replace(',','.'))||0)" onkeydown="if(event.key==='Enter')this.blur()">
                   <select class="usel" id="nom-unit-sel" onchange="setNomDiamUnit(this.value)" style="font-size:10px;padding:4px 7px">
                     <option value="mm">mm</option><option value="cm">cm</option><option value="m">m</option>
                   </select>
@@ -391,6 +391,18 @@ html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t
 <div class="toast" id="toast"></div>
 
 <script>
+// ── SAFETY: ensure KS loaded (auto-reload if missing) ──
+window.addEventListener('error',function(e){
+  if(e.message&&(e.message.includes('KS is not defined')||e.message.includes("Cannot read properties of undefined"))){
+    console.warn('KS error, reloading...',e.message);
+    setTimeout(()=>location.reload(),800);
+  }
+},true);
+if(typeof window.KS==='undefined'){
+  document.addEventListener('DOMContentLoaded',function(){
+    if(typeof window.KS==='undefined') location.reload();
+  });
+}
 // ── CONFIG ──
 const CFG=window.KS_CONFIG||{};
 const FB_CFG=CFG.firebase||{};
@@ -452,7 +464,15 @@ async function doLogin(){
     if(c&&myClient.projectCode&&myClient.projectCode!==c){auth.signOut();document.getElementById('lerr').textContent='Código incorrecto';return;}
     if(myClient.status!=='active'){auth.signOut();showSusp();return;}
     doEnter();
-  }catch(e2){document.getElementById('lerr').textContent='Credenciales incorrectas';}
+  }catch(e2){
+    if(e2.code==='auth/network-request-failed'){
+      document.getElementById('lerr').textContent='Error de red. Intenta de nuevo.';
+    } else if(e2.code==='auth/too-many-requests'){
+      document.getElementById('lerr').textContent='Demasiados intentos. Espera unos minutos.';
+    } else {
+      document.getElementById('lerr').textContent='Credenciales incorrectas ('+e2.code+')';
+    }
+  }
 }
 function doLogout(){if(!DEMO)auth?.signOut();myClient=null;myProjects=[];curP=null;
   document.getElementById('login-screen').style.display='flex';
@@ -638,7 +658,23 @@ function renderModeToggles(){
   document.getElementById('rdb-d').classList.toggle('active',rdMode==='d');
 }
 function setMode(m){const c=ensureComp();c.inputMode=m;markUnsaved();renderModeToggles();renderMeasContainer();}
-function setUnit(u){const c=ensureComp();c.unit=u;markUnsaved();renderModeToggles();renderCompTabs();renderMeasContainer();updateKPIs();}
+function setUnit(u){
+  const c=ensureComp();
+  // Migrate legacy points that don't have _mm fields
+  if(c.points){
+    const oldUnit=c.unit||'mm';
+    c.points.forEach(p=>{
+      if(p.dist_mm===undefined && p.dist!==undefined) p.dist_mm=KS.toMM(p.dist,oldUnit);
+      if(p.x_mm===undefined && p.x!==undefined) p.x_mm=KS.toMM(p.x,oldUnit);
+      if(p.y_mm===undefined && p.y!==undefined) p.y_mm=KS.toMM(p.y,oldUnit);
+      // Keep .dist/.x/.y as mm for ptsToCartMM compatibility
+      if(p.dist_mm!==undefined) p.dist=p.dist_mm;
+      if(p.x_mm!==undefined) p.x=p.x_mm;
+      if(p.y_mm!==undefined) p.y=p.y_mm;
+    });
+  }
+  c.unit=u;markUnsaved();renderModeToggles();renderCompTabs();renderMeasContainer();updateKPIs();
+}
 function setRD(v){rdMode=v;renderModeToggles();renderCompTabs();renderMeasContainer();}
 function setNomDiam(v){
   const comp2=ensureComp();const u=comp2.unit||'mm';
@@ -662,14 +698,16 @@ function renderMeasContainer(){
 }
 
 // ── STATION TOTAL TABLE ──
+// Points stored in mm internally. Display in current unit.
 function renderStationTable(pts,comp,mC,unit,mc){
-  const distLabel=rdMode==='r'?`Distancia/Radio (${unit})`:`Distancia/Diám. (${unit})`;
+  const distLabel=rdMode==='r'?`Radio/Dist. (${unit})`:`Diámetro (${unit})`;
   let h=`<table class="meas-tbl"><thead><tr>
-    <th>#</th><th>αV vertical (°)</th><th>αH horiz. (°)</th><th>${distLabel}</th><th>Residual</th><th></th>
+    <th>#</th><th>αV (°)</th><th>αH (°)</th><th>${distLabel}</th><th>Residual</th><th></th>
   </tr></thead><tbody>`;
   pts.forEach((pt,i)=>{
-    const dist_mm=KS.toMM(pt.dist||0,unit);
-    const rdispVal=rdMode==='r'?KS.fromMM(dist_mm,unit):KS.fromMM(dist_mm*2,unit);
+    // pt.dist stored in mm. Convert to display unit.
+    const dist_mm = pt.dist_mm !== undefined ? pt.dist_mm : KS.toMM(pt.dist||0, unit);
+    const rdispVal = rdMode==='r' ? KS.fromMM(dist_mm,unit) : KS.fromMM(dist_mm*2,unit);
     let res='—',resCol='var(--t3)';
     if(mC.fit){
       const cart=KS.stationToCart(pt.aV||90,pt.aH||0,dist_mm);
@@ -680,9 +718,15 @@ function renderStationTable(pts,comp,mC,unit,mc){
     }
     h+=`<tr>
       <td style="text-align:center;font-size:9px;color:var(--t3);font-family:var(--mono)">${i+1}</td>
-      <td><input class="ptin" type="number" step="0.001" value="${(pt.aV!==undefined?pt.aV:90).toFixed(4)}" oninput="updStation(${i},'aV',this.value)" onchange="updStation(${i},'aV',this.value)"></td>
-      <td><input class="ptin" type="number" step="0.001" value="${(pt.aH||0).toFixed(4)}" oninput="updStation(${i},'aH',this.value)" onchange="updStation(${i},'aH',this.value)"></td>
-      <td><input class="ptin" type="number" step="0.00001" value="${rdispVal.toFixed(5)}" oninput="updStation(${i},'dist',this.value)" onchange="updStation(${i},'dist',this.value)"></td>
+      <td><input class="ptin" type="text" inputmode="decimal" value="${(pt.aV!==undefined?pt.aV:90)}" placeholder="90"
+        onblur="commitStation(${i},'aV',this.value,this)"
+        onkeydown="if(event.key==='Enter'){this.blur();}"></td>
+      <td><input class="ptin" type="text" inputmode="decimal" value="${(pt.aH||0)}" placeholder="0"
+        onblur="commitStation(${i},'aH',this.value,this)"
+        onkeydown="if(event.key==='Enter'){this.blur();}"></td>
+      <td><input class="ptin" type="text" inputmode="decimal" value="${rdispVal.toFixed(5)}" placeholder="${rdispVal.toFixed(3)}"
+        onblur="commitStation(${i},'dist',this.value,this)"
+        onkeydown="if(event.key==='Enter'){this.blur();}"></td>
       <td class="res-cell" style="color:${resCol}">${res}</td>
       <td><button class="del-btn" onclick="delPt(${i})">×</button></td>
     </tr>`;
@@ -695,36 +739,49 @@ function renderStationTable(pts,comp,mC,unit,mc){
   mc.innerHTML=h;
 }
 
-function updStation(i,field,val){
+function commitStation(i,field,val,el){
   const c=ensureComp();if(!c.points||!c.points[i])return;
-  const parsed=parseFloat(val);
-  if(isNaN(parsed)) return; // don't update on intermediate/incomplete input
+  const parsed=parseFloat(val.replace(',','.'));
+  if(isNaN(parsed)){
+    // restore previous value
+    const unit=c.unit||'mm';
+    if(field==='dist'){
+      const dm=c.points[i].dist_mm||0;
+      el.value=(rdMode==='r'?KS.fromMM(dm,unit):KS.fromMM(dm*2,unit)).toFixed(5);
+    } else el.value=c.points[i][field]||0;
+    return;
+  }
   const unit=c.unit||'mm';
   if(field==='dist'){
     let vMM=KS.toMM(parsed,unit);
     if(rdMode==='d') vMM=vMM/2;
-    c.points[i].dist=KS.fromMM(vMM,unit);
+    // Store in mm internally
+    c.points[i].dist_mm=vMM;
+    c.points[i].dist=vMM; // keep .dist as mm for ptsToCartMM
+    el.value=(rdMode==='r'?KS.fromMM(vMM,unit):KS.fromMM(vMM*2,unit)).toFixed(5);
   } else {
     c.points[i][field]=parsed;
   }
   markUnsaved();renderMeasContainer();drawChart();updateKPIs();
   KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curTire,195,switchTire);
 }
+// Legacy alias
+function updStation(i,field,val){commitStation(i,field,val,{value:val});}
 function addStationPt(){
   const c=ensureComp();if(!c.points)c.points=[];
   const last=c.points.length>0?c.points[c.points.length-1]:{};
-  const unit=c.unit||'mm';
-  const nom=c.nomDiam?KS.fromMM(c.nomDiam/2,unit):KS.fromMM(curP.diam/2,unit);
-  c.points.push({aV:90,aH:((last.aH||0)+Math.round(360/Math.max(c.points.length+1,6)))%360,dist:parseFloat(nom.toFixed(5))});
+  const nomMM=c.nomDiam||(curP.diam)||4200;
+  const rMM=nomMM/2;
+  c.points.push({aV:90,aH:((last.aH||0)+Math.round(360/Math.max(c.points.length+1,6)))%360,dist:rMM,dist_mm:rMM});
   markUnsaved();renderMeasContainer();renderCompTabs();
 }
 function addMultiPts(){
-  const n=parseInt(prompt(`¿Cuántos puntos agregar? (configurado: ${curP.ptsPerTire||6})`,curP.ptsPerTire||6));
+  const n=parseInt(prompt(`¿Cuántos puntos? (configurado: ${curP.ptsPerTire||6})`,curP.ptsPerTire||6));
   if(!n||n<1)return;
   const c=ensureComp();if(!c.points)c.points=[];
-  const unit=c.unit||'mm';
-  const nom=c.nomDiam?KS.fromMM(c.nomDiam/2,unit):KS.fromMM(curP.diam/2,unit);
-  for(let i=0;i<n;i++) c.points.push({aV:90,aH:Math.round(i*360/n),dist:parseFloat(nom.toFixed(5))});
+  const nomMM=c.nomDiam||(curP.diam)||4200;
+  const rMM=nomMM/2;
+  for(let i=0;i<n;i++) c.points.push({aV:90,aH:Math.round(i*360/n),dist:rMM,dist_mm:rMM});
   markUnsaved();renderMeasContainer();renderCompTabs();
 }
 
@@ -763,25 +820,32 @@ function renderCartTable(pts,comp,mC,unit,mc){
   mc.innerHTML=h;
 }
 
-function updCart(i,field,val){
+function commitCart(i,field,val,el){
   const c=ensureComp();if(!c.points||!c.points[i])return;
-  const parsed=parseFloat(val);
-  if(isNaN(parsed)) return;
+  const parsed=parseFloat(val.replace(',','.'));
   const unit=c.unit||'mm';
+  if(isNaN(parsed)){
+    const mm=field==='x'?(c.points[i].x_mm||0):(c.points[i].y_mm||0);
+    el.value=KS.fromMM(mm,unit).toFixed(5); return;
+  }
   const vMM=KS.toMM(parsed,unit);
-  c.points[i][field]=KS.fromMM(vMM,unit);
+  // Store in mm
+  if(field==='x'){c.points[i].x_mm=vMM; c.points[i].x=vMM;}
+  else{c.points[i].y_mm=vMM; c.points[i].y=vMM;}
+  el.value=KS.fromMM(vMM,unit).toFixed(5);
   markUnsaved();renderMeasContainer();drawChart();updateKPIs();
   KS.drawKilnCylinder(document.getElementById('kiln-canvas'),curP,curTire,195,switchTire);
 }
+function updCart(i,field,val){commitCart(i,field,val,{value:val});}
 function addCartPt(){
   const c=ensureComp();if(!c.points)c.points=[];
-  c.points.push({x:0,y:0});markUnsaved();renderMeasContainer();renderCompTabs();
+  c.points.push({x:0,y:0,x_mm:0,y_mm:0});markUnsaved();renderMeasContainer();renderCompTabs();
 }
 function addMultiCartPts(){
   const n=parseInt(prompt('¿Cuántos puntos?',curP.ptsPerTire||6));
   if(!n||n<1)return;
   const c=ensureComp();if(!c.points)c.points=[];
-  for(let i=0;i<n;i++) c.points.push({x:0,y:0});
+  for(let i=0;i<n;i++) c.points.push({x:0,y:0,x_mm:0,y_mm:0});
   markUnsaved();renderMeasContainer();renderCompTabs();
 }
 function delPt(i){const c=ensureComp();c.points.splice(i,1);markUnsaved();renderMeasContainer();renderCompTabs();drawChart();updateKPIs();}
